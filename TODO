@@ -1,0 +1,7 @@
+
+* Add search filtering at the connector level 
+* Add ability to search through the connector
+* Per-user access rights when retrieving content from the connector
+* Write data back into the repository
+* Retrieve version information for documents in the repository
+* Process imports as a background task

@@ -1,0 +1,24 @@
+Version 0.1.0 RC2
+2009-11-26
+
+* Better handling of errors when a connector fails when building the tree in the CMS
+* Added "callUrl" method to underlying webclient API to better support some
+  CMIS refactorings
+* WebApiClient can have authentication details bound directly to it
+
+
+Version 0.1.0 RC1
+2009-11-16
+
+Initial release candidate of External Content module
+* Provides underlying infrastructure for various remote content connectors
+* Makes available a new "External Content" section that lists all different
+external content connectors configured in the system
+* Adds a new "External Content" option in the Insert Link toolbar
+* Adds a new ExternalDropdownField form field that can be used to select
+a value for a metadata field
+* Adds an "ExternalContentPage" type that allows for selecting an external 
+content item to appear in the page hierarchy as an entry point for browsing
+external content
+* Adds hooks for being able to theme external content items when viewed on the
+frontend. 
