@@ -223,17 +223,11 @@ class WebApiClient
 			$client->setEncType(isset($methodDetails['enctype']) ? $methodDetails['enctype'] : Zend_Http_Client::ENC_URLENCODED);
 	
 			$paramMethod = 'setParameter'.$requestType;
-			// make sure to add the alfTicket parameter
 			if ($this->globalParams) {
 				foreach ($this->globalParams as $key => $value) {
 					$client->$paramMethod($key, $value);
 				}
 			}
-			
-			/*
-			if ($this->ticket) {
-				$client->$paramMethod('alf_ticket', $this->ticket);
-			}*/
 	
 			if (isset($methodDetails['params'])) {
 				$paramNames = $methodDetails['params'];

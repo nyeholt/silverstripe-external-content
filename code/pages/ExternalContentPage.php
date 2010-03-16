@@ -104,6 +104,17 @@ class ExternalContentPage extends Page
 
 		return null;
 	}
+
+	/**
+	 * Return the children of this external content item as my children
+	 *
+	 * @return DataObjectSet
+	 */
+	public function Children()
+	{
+		$item = $this->ContentItem();
+		return $item ? $item->stageChildren() : new DataObjectSet();
+	}
 }
 
 /**
