@@ -175,7 +175,15 @@ class ExternalContentItem extends DataObject
 	{
 		return $this->source->allowedImportTargets();
 	}
-	
+
+	/**
+	 * An overrideable method to return the arbitrary 'content' of this
+	 * node. Child classes should implement their own version
+	 */
+	public function Content()
+	{
+	}
+
 	/**
 	 * Called to stream this content item (if it is streamable)
 	 * 
@@ -184,7 +192,6 @@ class ExternalContentItem extends DataObject
 	{
 		throw new Exception("This object cannot be streamed");
 	}
-	
 	
 	/**
 	 * Always return at least one as we never know til we load
