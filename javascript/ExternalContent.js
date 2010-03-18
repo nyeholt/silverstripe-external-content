@@ -11,7 +11,7 @@ SiteTreeHandlers.showRecord_url = SiteTreeHandlers.controller_url + '/show/';
 
 
 var _HANDLER_FORMS = {
-	addpage : 'addpage_options',
+	addpage : 'Form_CreateProviderForm',
 	deletepage : 'Form_DeleteItemsForm',
 	sortitems : 'sortitems_options'
 };
