@@ -240,6 +240,9 @@ class ExternalContentItem extends DataObject
 
 		if (count($this->remoteProperties)) {
 			foreach ($this->remoteProperties as $name => $value) {
+				if (is_array($value) || is_object($value)) {
+					continue;
+				}
 				$value = (string) $value;
 				$fields->addFieldToTab('Root.Details', new ReadonlyField($name, _t('ExternalContentItem.'.$name, $name), $value));
 			}
