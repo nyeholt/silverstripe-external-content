@@ -24,7 +24,7 @@ OF SUCH DAMAGE.
 /**
  * A simple helper function to deal with DB quoting. 
  */
-if (!defined('SSAU_QUOTE_CHAR')) {
+if (!function_exists('db_quote')) {
 
 	define('SSAU_QUOTE_CHAR', defined('DB::USE_ANSI_SQL') ? '"' : '');
 
@@ -70,5 +70,24 @@ if (!defined('SSAU_QUOTE_CHAR')) {
 
 		return $string;
 	}
+
 }
+
+if (!function_exists('ssau_log')) {
+	function ssau_log($message, $level=null) {
+		if (!$level) {
+			$level = SS_Log::NOTICE;
+		}
+		$message = array(
+			'errno' => '',
+			'errstr' => $message,
+			'errfile' => dirname(__FILE__),
+			'errline' => '',
+			'errcontext' => ''
+		);
+
+		SS_Log::log($message, $level);
+	}
+}
+
 ?>
