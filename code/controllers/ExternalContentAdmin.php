@@ -315,39 +315,30 @@ class ExternalContentAdmin extends LeftAndMain
 	}
 
 	/**
-	 * Returns a subtree of items underneat the given folder.
+	 * Returns a subtree of items underneath the given folder.
+	 *
+	 * We do our own version of returning tree data here - SilverStripe's base functionality is just too greedy
+	 * with data for this to be happy.
 	 */
 	public function getsubtree() {
 		$obj = ExternalContent::getDataObjectFor($_REQUEST['ID']);  //  DataObject::get_by_id('ExternalContentSource', $_REQUEST['ID']);
-		$obj->markPartialTree(1, null);
-
-		if($p = $this->currentPage()) $obj->markToExpose($p);
-
-		$titleEval = '"<li id=\"record-$child->ID\" class=\"$child->class" . $child->markingClasses() .  ($extraArg->isCurrentPage($child) ? " current" : "") . "\">" . ' .
-			'"<a href=\"" . Controller::join_links(substr($extraArg->Link(),0,-1), "show", $child->ID) . "\" class=\" contents\" >" . $child->Title . "</a>" ';
-
-		$this->generateTreeStylingJS();
 
 		if(isset($_GET['debug_profile'])) Profiler::mark("ExternalContentAdmin", "getsubtree");
-		$siteTreeList = null;
+		$siteTreeList = '';
 		try {
-			$siteTreeList = $obj->getChildrenAsUL(
-				'',
-				$titleEval,
-				$this,
-				true,
-				'AllChildrenIncludingDeleted',
-				'numChildren',
-				true,
-				1
-			);
+			$children = $obj->Children();
+			foreach ($children as $child) {
+				$siteTreeList .= '<li id="record-'.$child->ID.'" class="'.$child->class .' unexpanded closed">' .
+				'<a href="' . Controller::join_links(substr($this->Link(),0,-1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
+			}
+
 		} catch (Exception $e) {
-			error_log("Failed creating tree: ".$e->getMessage());
-			error_log($e->getTraceAsString());
+			ssau_log("Failed creating tree: ".$e->getMessage(), SS_Log::ERR);
+			ssau_log($e->getTraceAsString(), SS_Log::ERR);
 		}
 		if(isset($_GET['debug_profile'])) Profiler::unmark("ExternalContentAdmin", "getsubtree");
 
-		return substr(trim($siteTreeList), 4, -5);
+		return $siteTreeList;
 	}
 	
 	/**
