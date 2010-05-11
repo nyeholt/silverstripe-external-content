@@ -169,6 +169,7 @@ class ExternalContentAdmin extends LeftAndMain
 		$migrationTarget = isset($request['MigrationTarget']) ? $request['MigrationTarget'] : '';
 		$fileMigrationTarget = isset($request['FileMigrationTarget']) ? $request['FileMigrationTarget'] : '';
 		$includeSelected = isset($request['IncludeSelected']) ? $request['IncludeSelected'] : 0;
+		$includeChildren = isset($request['IncludeChildren']) ? $request['IncludeChildren'] : 0;
 		
 		$duplicates = isset($request['DuplicateMethod']) ? $request['DuplicateMethod'] : ExternalContentTransformer::DS_OVERWRITE;
 
@@ -194,7 +195,7 @@ class ExternalContentAdmin extends LeftAndMain
 			$importer = $from->getContentImporter($targetType);
 			
 			if ($importer) {
-				$importer->import($from, $target, $includeSelected, $duplicates);
+				$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates);
 			}
 			echo 'alert("Import to '.$target->ID.' complete")';
 		} else {
@@ -229,6 +230,8 @@ class ExternalContentAdmin extends LeftAndMain
 				}
 
 				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeSelected", _t('ExternalContent.INCLUDE_SELECTED', 'Include Selected Item in Import')));
+				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeChildren", _t('ExternalContent.INCLUDE_CHILDREN', 'Include Child Items in Import'), true));
+				
 				$duplicateOptions = array(
 					ExternalContentTransformer::DS_OVERWRITE => ExternalContentTransformer::DS_OVERWRITE,
 					ExternalContentTransformer::DS_DUPLICATE => ExternalContentTransformer::DS_DUPLICATE,
@@ -326,12 +329,11 @@ class ExternalContentAdmin extends LeftAndMain
 		if(isset($_GET['debug_profile'])) Profiler::mark("ExternalContentAdmin", "getsubtree");
 		$siteTreeList = '';
 		try {
-			$children = $obj->Children();
+			$children = $obj->stageChildren();
 			foreach ($children as $child) {
 				$siteTreeList .= '<li id="record-'.$child->ID.'" class="'.$child->class .' unexpanded closed">' .
 				'<a href="' . Controller::join_links(substr($this->Link(),0,-1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
 			}
-
 		} catch (Exception $e) {
 			ssau_log("Failed creating tree: ".$e->getMessage(), SS_Log::ERR);
 			ssau_log($e->getTraceAsString(), SS_Log::ERR);

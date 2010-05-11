@@ -46,7 +46,7 @@ abstract class ExternalContentImporter
 	 * @param String $duplicateStrategy
 	 * 			How to handle duplication 
 	 */
-	public function import($contentItem, $target, $includeParent = false, $duplicateStrategy='overwrite')
+	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='overwrite')
 	{
 		$children = null;
 		if ($includeParent) {
@@ -57,7 +57,7 @@ abstract class ExternalContentImporter
 			$children = $contentItem->stageChildren();
 		}
 
-		$this->importChildren($children, $target, $duplicateStrategy);
+		$this->importChildren($children, $target, $includeChildren, $duplicateStrategy);
 	}
 
 	/**
@@ -66,7 +66,7 @@ abstract class ExternalContentImporter
 	 * @param DataObjectSet $children
 	 * @param SiteTree $parent
 	 */
-	protected function importChildren($children, $parent, $duplicateStrategy)
+	protected function importChildren($children, $parent, $includeChildren, $duplicateStrategy)
 	{
 		if (!$children) {
 			return;
@@ -81,9 +81,9 @@ abstract class ExternalContentImporter
 				$result = $transformer->transform($child, $parent, $duplicateStrategy);
 
 				// if there's more, then transform them
-				if ($result && $result->children && count($result->children)) {
+				if ($includeChildren && $result && $result->children && count($result->children)) {
 					// import the children
-					$this->importChildren($result->children, $result->page, $duplicateStrategy);
+					$this->importChildren($result->children, $result->page, $includeChildren, $duplicateStrategy);
 				}
 			}
 		}
