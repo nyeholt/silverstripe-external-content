@@ -1,3 +1,8 @@
+Version 0.2.0
+
+* Added the ability to run imports as a queuedjob if you have the queuedjobs 
+  module installed. 
+
 Version 0.1.0 RC2
 2009-11-26
 
