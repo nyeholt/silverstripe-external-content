@@ -175,6 +175,11 @@ class ExternalContentAdmin extends LeftAndMain
 
 		$selected =  isset($request['ID']) ? $request['ID'] : 0;
 
+		$result = array(
+			'message' => "Invalid request",
+			'status' => false
+		);
+
 		if ($selected && ($migrationTarget || $fileMigrationTarget)) {
 			// get objects and start stuff
 			$target = null;
@@ -197,10 +202,11 @@ class ExternalContentAdmin extends LeftAndMain
 			if ($importer) {
 				$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates);
 			}
-			echo 'alert("Import to '.$target->ID.' complete")';
-		} else {
-			echo 'alert("Invalid details provided")';
+			$result['message'] = "Starting import to ".$target->Title;
+			$result['status'] = true;
 		}
+
+		echo Convert::raw2json($result);
 	}
 
 	/**

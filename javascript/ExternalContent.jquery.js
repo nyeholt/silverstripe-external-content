@@ -22,7 +22,15 @@
 			statusMessage('Importing ...', 2);
 
 			$.post(form.attr('action'), postParams, function (data) {
-				statusMessage('Import complete...', 'good');
+
+				if (data) {
+					var response = $.parseJSON(data);
+					if (response && response.status) {
+						statusMessage(response.message, 'good');
+					} else {
+						statusMessage("There was a problem with the import");
+					}
+				}
 
 				// reset the base form 
 				if (pt) {

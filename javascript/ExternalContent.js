@@ -76,37 +76,35 @@ if (CMSRightForm) {
 	};
 		
 	CMSRightForm.prototype.getPageFromServer = function(id, treeNode) {
-			if(id) {
-				this.receivingID = id;
-	
-				// Treenode might not exist if that part of the tree is closed
-				if(!treeNode) treeNode = $('sitetree').getTreeNodeByIdx(id);
-	
-				if(treeNode) {
-					$('sitetree').loadingNode = treeNode;
-					treeNode.addNodeClass('loading');
-					url = treeNode.aTag.href + (treeNode.aTag.href.indexOf('?')==-1?'?':'&') + 'ajax=1';
-				}
-				if(SiteTreeHandlers.loadPage_url) {
-					var sep = (SiteTreeHandlers.loadPage_url.indexOf('?') == -1) ? '?' : '&';
-					url = SiteTreeHandlers.loadPage_url + sep + 'ID=' + id;
-				}
-				
-				// used to set language in CMSMain->init()
-				var lang = $('LangSelector') ? $F('LangSelector') : null;
-				if(lang) {
-				  url += '&locale='+lang;
-				}
-	
-				statusMessage("loading...");
-				this.loadURLFromServer(url);
-			} else {
-				throw("getPageFromServer: Bad page  ID: " + id);
+		if(id) {
+			this.receivingID = id;
+
+			// Treenode might not exist if that part of the tree is closed
+			if(!treeNode) treeNode = $('sitetree').getTreeNodeByIdx(id);
+
+			if(treeNode) {
+				$('sitetree').loadingNode = treeNode;
+				treeNode.addNodeClass('loading');
+				url = treeNode.aTag.href + (treeNode.aTag.href.indexOf('?')==-1?'?':'&') + 'ajax=1';
 			}
+			if(SiteTreeHandlers.loadPage_url) {
+				var sep = (SiteTreeHandlers.loadPage_url.indexOf('?') == -1) ? '?' : '&';
+				url = SiteTreeHandlers.loadPage_url + sep + 'ID=' + id;
+			}
+
+			// used to set language in CMSMain->init()
+			var lang = $('LangSelector') ? $F('LangSelector') : null;
+			if(lang) {
+			  url += '&locale='+lang;
+			}
+
+			statusMessage("loading...");
+			this.loadURLFromServer(url);
+		} else {
+			throw("getPageFromServer: Bad page  ID: " + id);
+		}
 	};
 }
-
-// CMSRightForm.applyTo('#Form_EditForm', 'right');
 
 /**
  * Add File Action
@@ -239,26 +237,18 @@ deletefolder = {
 }
 
 Behaviour.register({
-	'#Form_EditForm_Files': {
-		removeFile : function(fileID) {
-			var record;
-			if(record = $('record-' + fileID)) {
-				record.parentNode.removeChild(record);
-			} 
-		}
-	},	
-	
-	'#Form_EditForm_Files a.deletelink' : {
-		onclick : function(event) {
-			ajaxLink(this.href);
-			Event.stop(event);
-			return false;
-		}
-	},
-	
 	'#Form_EditForm' : {
 		changeDetection_fieldsToIgnore : {
-			'Files[]' : true
+			'MigrationTarget' : true,
+			'IncludeSelected' : true,
+			'IncludeChildren' : true,
+			'DuplicateMethod' : true
+		}
+	},
+	'#Form_EditForm_Migrate' : {
+		onclick: function (e) {
+			Event.stop(e);
+			return false;
 		}
 	}
 });
@@ -283,18 +273,4 @@ Behaviour.register({
  * Initialisation function to set everything up
  */
 appendLoader(function () {
-	// Set up delete page
-	Observable.applyTo($('Form_DeleteItemsForm'));
-	if($('deletepage')) {
-		$('deletepage').onclick = deletefolder.button_onclick;
-		// $('deletepage').onclick = function() { Element.show('Form_DeleteItemsForm'); return false; };
-		$('Form_DeleteItemsForm').onsubmit = deletefolder.form_submit;
-		Element.hide('Form_DeleteItemsForm');
-	}
-	
 });
-
-function refreshAsset() {
-	frames[0].location.reload(0);
-	frames[1].location.reload(1);
-}
