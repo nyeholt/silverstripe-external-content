@@ -174,6 +174,11 @@ class WebApiClient
 		$this->addReturnHandler('json', new JsonReturnHandler());
 	}
 
+	public function __call($method, $args) {
+		$arg = is_array($args) && count($args) ? $args[0] : null;
+		return $this->callMethod($method, $arg);
+	}
+
 	/**
 	 * Call a method with the passed in arguments
 	 * 
