@@ -341,8 +341,8 @@ class ExternalContentAdmin extends LeftAndMain
 				'<a href="' . Controller::join_links(substr($this->Link(),0,-1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
 			}
 		} catch (Exception $e) {
-			ssau_log("Failed creating tree: ".$e->getMessage(), SS_Log::ERR);
-			ssau_log($e->getTraceAsString(), SS_Log::ERR);
+			singleton('ECUtils')->log("Failed creating tree: ".$e->getMessage(), SS_Log::ERR);
+			singleton('ECUtils')->log($e->getTraceAsString(), SS_Log::ERR);
 		}
 		if(isset($_GET['debug_profile'])) Profiler::unmark("ExternalContentAdmin", "getsubtree");
 

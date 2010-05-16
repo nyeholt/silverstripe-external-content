@@ -29,7 +29,4 @@ Director::addRules(60, array(
 Object::useCustomClass('HtmlEditorField_Toolbar', 'ExternalHtmlEditorField_Toolbar');
 
 set_include_path(dirname(__FILE__).'/thirdparty'.PATH_SEPARATOR.get_include_path());
-
-include_once dirname(__FILE__).'/helpers.php';
-
 ?>
