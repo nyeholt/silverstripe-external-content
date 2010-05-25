@@ -15,6 +15,7 @@ FileSystem Connector module (for a default connector implementation)
 
 Documentation
 -----------------------------------------------
+
 The external content module provides a method for making content from 
 external sources available and usable within SilverStripe
 
@@ -27,6 +28,8 @@ for a quick start guide to working with the filesystem-connector module
 See http://doc.silverstripe.org/doku.php?id=module:external-content-newconnector
 for writing a new custom connector
 
+
+
 Quick Usage Overview
 -----------------------------------------------
 
@@ -35,7 +38,7 @@ As copied from http://doc.silverstripe.org/doku.php?id=module:external-content-q
 This article assumes that you have installed the "FileSystem Connector" module (http://public.silverstripe.com.au/open/modules/filesystem-connector/), which provides access to content from a filesystem path. 
 
 ==== Connecting to the content source ====
-
+  * Extract the module to your silverstripe root directory in a directory called "external-content" 
   * Browse to http://localhost/external-content/admin and login
   * Create a new FileSystemContentSource from the tree on the left menu. Set the 
 following field values:
