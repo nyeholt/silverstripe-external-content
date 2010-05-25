@@ -45,7 +45,7 @@ class ExternalContentItem extends DataObject
 	static $extensions = array(
 		"Hierarchy",
 	);
-	
+
 	protected $ownerId;
 	
 	/**

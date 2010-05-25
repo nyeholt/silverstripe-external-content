@@ -5,7 +5,7 @@
 
 ;(function ($, pt) {
 	$().ready(function () {
-		// bind the upload form
+		// bind the migrate form so we can properly handle a migrate
 		$('#Form_EditForm_Migrate').livequery(function () {
 			$(this).click(function () {
 				// we don't want this to be submitted via the edit form, as we want to do an ajax postback for this
@@ -31,7 +31,6 @@
 							statusMessage("There was a problem with the import");
 						}
 					}
-
 					// reset the base form
 					if (pt) {
 						pt(form.attr('id')).resetElements();

@@ -2,8 +2,7 @@
  * Configuration for the left hand tree
  */
 if(typeof SiteTreeHandlers == 'undefined') SiteTreeHandlers = {};
-// SiteTreeHandlers.parentChanged_url = 'admin/assets/ajaxupdateparent';
-// SiteTreeHandlers.orderChanged_url = 'admin/assets/ajaxupdatesort';
+
 SiteTreeHandlers.controller_url = 'admin/external-content';
 SiteTreeHandlers.loadPage_url = SiteTreeHandlers.controller_url + '/getitem';
 SiteTreeHandlers.loadTree_url = SiteTreeHandlers.controller_url + '/getsubtree';
@@ -31,6 +30,7 @@ if (CMSRightForm) {
 				asynchronous : true,
 				onSuccess : function( response ) {
 					$('Form_EditForm').successfullyReceivedPage(response,id);
+					return true;
 				},
 				onFailure : function(response) { 
 					alert(response.responseText);
@@ -41,12 +41,7 @@ if (CMSRightForm) {
 	
 	CMSRightForm.prototype.successfullyReceivedPage = function(response,pageID) {
 		var loadingNode = $('sitetree').loadingNode;
-		
-		// not needed with compound IDs
-		//if( loadingNode && pageID && parseInt( $('sitetree').getIdxOf( loadingNode ) ) != pageID ) {
-			// return;
-		// }
-
+		$('sitetree').getTreeNodeByIdx(pageID).ajaxExpansion();
 		// must wait until the javascript has finished
 		document.body.style.cursor = 'wait';
 	
@@ -245,6 +240,7 @@ Behaviour.register({
 			'DuplicateMethod' : true
 		}
 	},
+	
 	'#Form_EditForm_Migrate' : {
 		onclick: function (e) {
 			Event.stop(e);
@@ -252,7 +248,7 @@ Behaviour.register({
 		}
 	}
 });
-
+ 
 /**
  * We don't want hitting the enter key in the name field
  * to submit the form.
