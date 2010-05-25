@@ -336,9 +336,11 @@ class ExternalContentAdmin extends LeftAndMain
 		$siteTreeList = '';
 		try {
 			$children = $obj->stageChildren();
-			foreach ($children as $child) {
-				$siteTreeList .= '<li id="record-'.$child->ID.'" class="'.$child->class .' unexpanded closed">' .
-				'<a href="' . Controller::join_links(substr($this->Link(),0,-1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
+			if ($children) {
+				foreach ($children as $child) {
+					$siteTreeList .= '<li id="record-'.$child->ID.'" class="'.$child->class .' unexpanded closed">' .
+					'<a href="' . Controller::join_links(substr($this->Link(),0,-1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
+				}
 			}
 		} catch (Exception $e) {
 			singleton('ECUtils')->log("Failed creating tree: ".$e->getMessage(), SS_Log::ERR);
