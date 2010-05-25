@@ -41,7 +41,7 @@ if (CMSRightForm) {
 	
 	CMSRightForm.prototype.successfullyReceivedPage = function(response,pageID) {
 		var loadingNode = $('sitetree').loadingNode;
-		$('sitetree').getTreeNodeByIdx(pageID).ajaxExpansion();
+		
 		// must wait until the javascript has finished
 		document.body.style.cursor = 'wait';
 	
@@ -240,7 +240,6 @@ Behaviour.register({
 			'DuplicateMethod' : true
 		}
 	},
-	
 	'#Form_EditForm_Migrate' : {
 		onclick: function (e) {
 			Event.stop(e);

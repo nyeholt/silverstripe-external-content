@@ -5,6 +5,11 @@
 
 ;(function ($, pt) {
 	$().ready(function () {
+		$('#Form_EditForm').bind('PageSaved', function (e, b, d) {
+			var pageID = $('#Form_EditForm_ID').val();
+			pt('sitetree').getTreeNodeByIdx(pageID).ajaxExpansion();
+		});
+
 		// bind the migrate form so we can properly handle a migrate
 		$('#Form_EditForm_Migrate').livequery(function () {
 			$(this).click(function () {
