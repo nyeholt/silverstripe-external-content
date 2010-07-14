@@ -184,6 +184,10 @@ class WebApiClient
 	 * 
 	 * @param String $method
 	 * @param array $args - a mapping of argumentName => argumentValue
+	 * @param array $getParams
+	 *				Specific get params to add in
+	 * @param array $postParams
+	 *				Specific post params to append
 	 * @return mixed
 	 */
 	public function callMethod($method, $args)
@@ -213,7 +217,9 @@ class WebApiClient
 			// 	check for any replacements that are required
 			if (preg_match_all('/{(\w+)}/', $uri, $matches)) {
 				foreach ($matches[1] as $match) {
-					$uri = str_replace('{'.$match.'}', $args[$match], $uri);
+					if (isset($args[$match])) {
+						$uri = str_replace('{'.$match.'}', $args[$match], $uri);
+					}
 				}
 			}
 
@@ -233,7 +239,7 @@ class WebApiClient
 					$client->$paramMethod($key, $value);
 				}
 			}
-	
+
 			if (isset($methodDetails['params'])) {
 				$paramNames = $methodDetails['params'];
 				foreach ($paramNames as $index => $pname) {
@@ -243,6 +249,18 @@ class WebApiClient
 					} else if (isset($args[$index])) {
 						$client->$paramMethod($pname, $args[$index]);	
 					}
+				}
+			}
+
+			if (isset($methodDetails['get'])) {
+				foreach ($methodDetails['get'] as $k => $v) {
+					$client->setParameterGet($k, $v);
+				}
+			}
+
+			if (isset($methodDetails['post'])) {
+				foreach ($methodDetails['post'] as $k => $v) {
+					$client->setParameterGet($k, $v);
 				}
 			}
 	
