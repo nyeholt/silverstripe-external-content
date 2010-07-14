@@ -268,4 +268,20 @@ Behaviour.register({
  * Initialisation function to set everything up
  */
 appendLoader(function () {
+	Observable.applyTo($('Form_DeleteItemsForm'));
+	if($('deletepage')) {
+		$('deletepage').onclick = deletefolder.button_onclick;
+		$('deletepage').getElementsByTagName('button')[0].onclick = function() { return false; };
+		// Prevent bug #4740, particularly with IE
+		Behaviour.register({
+			'#Form_DeleteItemsForm' : {
+				onsubmit: function(event) {
+					deletefolder.form_submit();
+					Event.stop(event);
+					return false;
+				}
+			}
+		});
+		Element.hide('Form_DeleteItemsForm');
+	}
 });
