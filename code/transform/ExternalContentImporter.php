@@ -84,7 +84,6 @@ abstract class ExternalContentImporter
 			$pageType = $this->getExternalType($child); 
 			if (isset($this->contentTransforms[$pageType])) {
 				$transformer = $this->contentTransforms[$pageType];
-				
 				$result = $transformer->transform($child, $parent, $duplicateStrategy);
 
 				// if there's more, then transform them

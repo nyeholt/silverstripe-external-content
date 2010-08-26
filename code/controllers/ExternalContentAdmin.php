@@ -195,8 +195,8 @@ class ExternalContentAdmin extends LeftAndMain
 			if ($from instanceof ExternalContentSource) {
 				$selected = false;
 			}
+
 			$importer = null;
-			
 			$importer = $from->getContentImporter($targetType);
 			
 			if ($importer) {

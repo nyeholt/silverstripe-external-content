@@ -101,18 +101,25 @@ class ExternalContentItem extends DataObject
 	 * 
 	 * @return String
 	 */
-	public function getType()
-	{
+	public function getType() {
 		throw new Exception("Please implement ".get_class($this)."::getType()");
 	}
 
 	/**
 	 * Initialise this object based on its source object
 	 */
-	protected function init()
-	{
+	protected function init() {
 	}
-	
+
+
+	/**
+	 * Get the content source for this item
+	 *
+	 * @return ExternalContentSource
+	 */
+	public function getSource() {
+		return $this->source;
+	}
 
 	/**
 	 * Return a URL that simply links back to the externalcontentadmin

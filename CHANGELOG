@@ -1,3 +1,11 @@
+Version 0.2.1
+2010-08-26
+
+* Fixed cache bug in WebApiClient where URL replacements were being done after 
+  was generated
+* Added method to retrieve the external content source via the external
+  content item. Useful for importing content
+
 Version 0.2.0
 2010-07-19
 

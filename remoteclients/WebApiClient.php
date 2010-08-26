@@ -205,6 +205,15 @@ class WebApiClient
 		// different users will have different sessions. This might need to be
 		// tweaked to handle separate user logins at a later point in time
 		$uri = $this->baseUrl . (isset($methodDetails['url']) ? $methodDetails['url'] : '');
+		// 	check for any replacements that are required
+		if (preg_match_all('/{(\w+)}/', $uri, $matches)) {
+			foreach ($matches[1] as $match) {
+				if (isset($args[$match])) {
+					$uri = str_replace('{'.$match.'}', $args[$match], $uri);
+				}
+			}
+		}		
+
 		$cacheKey = md5($uri . $method . var_export($args, true) . var_export($this->globalParams, true));
 		
 		$requestType = isset($methodDetails['method']) ? $methodDetails['method'] : 'GET';
@@ -214,14 +223,7 @@ class WebApiClient
 		}
 
 		if (!$body) {
-			// 	check for any replacements that are required
-			if (preg_match_all('/{(\w+)}/', $uri, $matches)) {
-				foreach ($matches[1] as $match) {
-					if (isset($args[$match])) {
-						$uri = str_replace('{'.$match.'}', $args[$match], $uri);
-					}
-				}
-			}
+			
 
 			// Note that case is important! Some servers won't respond correctly
 			// to get or Get requests
