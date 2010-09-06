@@ -42,11 +42,13 @@ class WebApiClientTest extends SapphireTest
 			'params' => array('arg', 'another'),
 			'enctype' => Zend_Http_Client::ENC_URLENCODED,
 			'return' => 'raw',
+			'cache' => 0
 		),
 		'secondMethod' => array(
 			'url' => '/path/{replacement}/to',
 			'params' => array('arg', 'another'),
 			'return' => 'json',
+			'cache' => 0
 		)
 	); 
 	
