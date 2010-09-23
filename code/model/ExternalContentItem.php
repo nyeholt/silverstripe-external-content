@@ -122,6 +122,15 @@ class ExternalContentItem extends DataObject
 	}
 
 	/**
+	 * Override to ensure exists handles things properly
+	 *
+	 * @return boolean
+	 */
+	public function exists() {
+		return !is_null($this->ID);
+	}
+
+	/**
 	 * Return a URL that simply links back to the externalcontentadmin
 	 * class' 'view' action
 	 * 
