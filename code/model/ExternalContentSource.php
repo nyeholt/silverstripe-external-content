@@ -40,6 +40,10 @@ class ExternalContentSource extends DataObject
 		'Name' => 'Text',
 		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?
 	);
+	
+	static $defaults = array(
+		'ParentID' => '0'
+	);
 
 	static $extensions = array(
 		"Hierarchy",
@@ -100,6 +104,7 @@ class ExternalContentSource extends DataObject
 	{
 		$fields = parent::getCMSFields();
 
+		$fields->removeByName('ParentID');
 		$fields->addFieldToTab('Root.Main', new TextField('Name', _t('ExternalContentSource.NAME', 'Name')));
 		$fields->addFieldToTab('Root.Main', new CheckboxField("ShowContentInMenu", _t('ExternalContentSource.SHOW_IN_MENUS', 'Show Content in Menus')));
 
