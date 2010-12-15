@@ -1,20 +1,25 @@
-Version 0.2.1
-2010-08-26
+2010-12-15 v0.2.3 
+-----------------
+
+* Fixed small issue with some JS changes in 2.4.3
+
+2010-08-26 v0.2.1
+-----------------
 
 * Fixed cache bug in WebApiClient where URL replacements were being done after 
   was generated
 * Added method to retrieve the external content source via the external
   content item. Useful for importing content
 
-Version 0.2.0
-2010-07-19
+2010-07-19 v0.2.0
+-----------------
 
 * Added the ability to run imports as a queuedjob if you have the queuedjobs 
   module installed. 
 * Further bugfixes
 
-Version 0.1.0 RC2
-2009-11-26
+2009-11-26 v0.1.0 RC2
+---------------------
 
 * Better handling of errors when a connector fails when building the tree in the CMS
 * Added "callUrl" method to underlying webclient API to better support some
@@ -22,8 +27,8 @@ Version 0.1.0 RC2
 * WebApiClient can have authentication details bound directly to it
 
 
-Version 0.1.0 RC1
-2009-11-16
+2009-11-16 v0.1.0 RC1
+---------------------
 
 Initial release candidate of External Content module
 * Provides underlying infrastructure for various remote content connectors
