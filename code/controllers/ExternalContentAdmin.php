@@ -71,6 +71,7 @@ class ExternalContentAdmin extends LeftAndMain
 	function init() {
 		parent::init();
 
+		Requirements::javascript(THIRDPARTY_DIR.'/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript('external-content/javascript/ExternalContent.js');
 		Requirements::javascript('external-content/javascript/ExternalContent.jquery.js');
 
