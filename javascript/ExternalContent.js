@@ -131,8 +131,11 @@ addfolder.prototype = {
 	onSuccess: function(response) {
 		Ajax.Evaluator(response);
 		// Make it possible to drop files into the new folder
-		DropFileItem.applyTo('#sitetree li');
+		if (DropFileItem) {
+			DropFileItem.applyTo('#sitetree li');
+		}
 	},
+
 	showAddPageError: function(response) {
 		errorMessage('Error adding connector', response);
 	}	
