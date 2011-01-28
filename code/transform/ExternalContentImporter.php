@@ -43,8 +43,10 @@ abstract class ExternalContentImporter
 	 * 			Whether to include the selected item in the import or not
 	 * @param String $duplicateStrategy
 	 * 			How to handle duplication 
+	 * @param array $params All parameters passed with the import request.
 	 */
-	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='overwrite')
+	public function import($contentItem, $target, $includeParent = false, 
+		$includeChildren = true, $duplicateStrategy='overwrite', $params = array())
 	{
 
 		// if the queuedjobs module exists, use that

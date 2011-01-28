@@ -163,7 +163,7 @@ class ExternalContentAdmin extends LeftAndMain
 	/**
 	 * Action to migrate a selected object through to SS
 	 * 
-	 * @param HtTP_Request $request
+	 * @param array $request
 	 */
 	public function migrate($request)
 	{
@@ -201,7 +201,13 @@ class ExternalContentAdmin extends LeftAndMain
 			$importer = $from->getContentImporter($targetType);
 			
 			if ($importer) {
-				$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates);
+				$importer->import(
+					$from,
+					$target,
+					$includeSelected,
+					$includeChildren,
+					$duplicates,
+					$request);
 			}
 			$result['message'] = "Starting import to ".$target->Title;
 			$result['status'] = true;
