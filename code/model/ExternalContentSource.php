@@ -193,6 +193,15 @@ class ExternalContentSource extends DataObject
 	}
 
 	/**
+	 * Returns whether or not this source can be imported, defaulting to true.
+	 *
+	 * @return bool
+	 */
+	public function canImport() {
+		return true;
+	}
+
+	/**
 	 * Override to return the top level content items from the remote
 	 * content source. 
 	 * 

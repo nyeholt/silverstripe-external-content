@@ -223,10 +223,12 @@ class ExternalContentAdmin extends LeftAndMain
 		if($record) {
 			$fields = $record->getCMSFields();
 			
-			$migrate = false;
-			// create the 'migrate' tab if it's an external item
-			if ($record instanceof ExternalContentItem || $record instanceof ExternalContentSource) {
-				$migrate = true;
+			// If we're editing an external source or item, and it can be imported
+			// then add the "Import" tab.
+			$isSource = $record instanceof ExternalContentSource;
+			$isItem   = $record instanceof ExternalContentItem;
+
+			if (($isSource || $isItem) && $record->canImport()) {
 				$allowedTypes = $record->allowedImportTargets();
 				if (isset($allowedTypes['sitetree'])) {
 					$fields->addFieldToTab('Root.Import', new TreeDropdownField("MigrationTarget", _t('ExternalContent.MIGRATE_TARGET', 'Page to import into'), 'SiteTree'));

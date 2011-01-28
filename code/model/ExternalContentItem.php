@@ -295,6 +295,16 @@ class ExternalContentItem extends DataObject
 	}
 
 	/**
+	 * Returns whether or not this source can be imported, defaulting to the
+	 * linked source's permission.
+	 *
+	 * @return bool
+	 */
+	public function canImport() {
+		return $this->source->canImport();
+	}
+
+	/**
 	 * The list of properties loaded from a remote data source
 	 * 
 	 * @var array
