@@ -29,9 +29,17 @@ OF SUCH DAMAGE.
 abstract class ExternalContentImporter
 {
 	protected $contentTransforms = array();
+	protected $params = array();
 	
 	public function __construct()
 	{
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getParams() {
+		return $this->params;
 	}
 
 	/**
@@ -48,6 +56,7 @@ abstract class ExternalContentImporter
 	public function import($contentItem, $target, $includeParent = false, 
 		$includeChildren = true, $duplicateStrategy='overwrite', $params = array())
 	{
+		$this->params = $params;
 
 		// if the queuedjobs module exists, use that
 		$queuedVersion = 'Queued'.get_class($this);
