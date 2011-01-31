@@ -429,14 +429,17 @@ JS;
 	 */
 	public function CreateProviderForm()
 	{
-		$providerClasses = ClassInfo::subclassesFor(self::$tree_class);
-		// remove the external content source abstract class
-		array_shift($providerClasses);
-		
+		$classes = ClassInfo::subclassesFor(self::$tree_class);
+		array_shift($classes);
+
+		foreach ($classes as $key => $class) {
+			if (!singleton($class)->canCreate()) unset($classes[$key]);
+		}
+
 		$fields = new FieldSet(
 			new HiddenField("ParentID"),
 			new HiddenField("Locale", 'Locale', Translatable::get_current_locale()),
-			new DropdownField("ProviderType", "", $providerClasses)
+			new DropdownField("ProviderType", "", $classes)
 		);
 
 		$actions = new FieldSet(

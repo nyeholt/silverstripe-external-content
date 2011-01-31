@@ -164,7 +164,16 @@ class ExternalContentSource extends DataObject
 	{
 		return array();
 	}
-	
+
+	/**
+	 * Controls whether the user can create this content source.
+	 *
+	 * @return bool
+	 */
+	public function canCreate() {
+		return true;
+	}
+
 	/**
 	 * We flag external content as being editable so it's 
 	 * accessible in the backend, but the individual 
