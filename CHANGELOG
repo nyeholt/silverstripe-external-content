@@ -1,3 +1,10 @@
+2011-01-31 v0.2.5
+-----------------
+
+* Small updates to the way import capability is detected and exposed for
+  connectors.
+* Importers are now passed through the request parameters used when importing
+
 2011-01-18 v0.2.4
 -----------------
 
