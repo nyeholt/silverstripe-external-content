@@ -30,8 +30,11 @@ OF SUCH DAMAGE.
 abstract class QueuedExternalContentImporter extends AbstractQueuedJob
 {
 	protected $contentTransforms = array();
-	
-	public function __construct($contentItem = null, $target = null, $includeParent = false, $includeChildren = true, $duplicateStrategy='overwrite') {
+
+	public function __construct($contentItem = null, $target = null,
+		$includeParent = false, $includeChildren = true,
+		$duplicateStrategy='overwrite', $params = array()
+	) {
 		if ($contentItem) {
 			$this->sourceObjectID = $contentItem->ID;
 			$this->targetObjectID = $target->ID;
@@ -39,6 +42,7 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob
 			$this->includeParent = $includeParent;
 			$this->includeChildren = $includeChildren;
 			$this->duplicateStrategy = $duplicateStrategy;
+			$this->params = $params;
 		} else {
 			// if there's no constructor params, it means we're executing
 			$this->init();
@@ -99,6 +103,12 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob
 		return QueuedJob::QUEUED;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getParams() {
+		return $this->params;
+	}
 
 	/**
 	 */
