@@ -4,6 +4,7 @@
 (ajshort)
 
 * Added a canCreate() check for Content Sources
+* Pass params through to QueuedImport jobs
 
 2011-01-31 v0.2.5
 -----------------
