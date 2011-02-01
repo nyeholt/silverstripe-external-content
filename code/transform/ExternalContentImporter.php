@@ -61,7 +61,14 @@ abstract class ExternalContentImporter
 		// if the queuedjobs module exists, use that
 		$queuedVersion = 'Queued'.get_class($this);
 		if (ClassInfo::exists('QueuedJob') && ClassInfo::exists($queuedVersion)) {
-			$importer = new $queuedVersion($contentItem, $target, $includeParent, $includeChildren, $duplicateStrategy);
+			$importer = new $queuedVersion(
+				$contentItem,
+				$target,
+				$includeParent,
+				$includeChildren,
+				$duplicateStrategy,
+				$params);
+
 			singleton('QueuedJobService')->queueJob($importer);
 			return;
 		}
