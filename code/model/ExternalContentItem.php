@@ -240,6 +240,26 @@ class ExternalContentItem extends DataObject
 	}
 	
 	/**
+	 * Handle a children call by retrieving from stageChildren
+	 */
+	public function Children() {
+		static $children;
+		
+		if (!$children) {
+			$children = new DataObjectSet();
+			$kids = $this->stageChildren();
+			if ($kids) {
+				foreach ($kids as $child) {
+					if ($child->canView()) {
+						$children->push($child);
+					}
+				}
+			}
+		}
+		return $children;
+	}
+	
+	/**
 	 * For now just show a field that says this can't be edited
 	 * 
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)

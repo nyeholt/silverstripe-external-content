@@ -56,9 +56,9 @@ class ExternalContentPage extends Page
 	/**
 	 * Get the external content item
 	 * 
-	 * @return unknown_type
+	 * @return DataObject
 	 */
-	public function ContentItem()
+	public function ContentItem($what='k')
 	{
 		if ($this->requestedItem) {
 			return $this->requestedItem;
@@ -131,13 +131,15 @@ class ExternalContentPage_Controller extends Page_Controller
 			if ($object instanceof ExternalContentSource) {
 				$object = $object->getRoot();
 			}
-			if ($object && ($object instanceof ExternalContentItem)) {
-				$template = 'ExternalContent_'.get_class($object).'_'.$object->getType();
+
+			if ($object && ($object instanceof ExternalContentItem || $object instanceof ExternalContentSource)) {
+				$type = $object instanceof ExternalContentItem ? $object->getType() : 'source';
+				$template = 'ExternalContent_'.get_class($object).'_'.$type;
 				return $this->customise($object)->renderWith(array($template, 'ExternalContent_'.get_class($object), 'ExternalContent', 'Page'));
 			}
 		}
 
-		echo "Template not found for ".($object ? $object->ID : '');
+		echo "Template not found for ".($object ? get_class($object) . ' #'.$object->ID : '');
 	}
 
 	/**

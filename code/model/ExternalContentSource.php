@@ -231,6 +231,26 @@ class ExternalContentSource extends DataObject
 	}
 	
 	/**
+	 * Handle a children call by retrieving from stageChildren
+	 */
+	public function Children() {
+		static $children;
+		
+		if (!$children) {
+			$children = new DataObjectSet();
+			$kids = $this->stageChildren();
+			if ($kids) {
+				foreach ($kids as $child) {
+					if ($child->canView()) {
+						$children->push($child);
+					}
+				}
+			}
+		}
+		return $children;
+	}
+	
+	/**
 	 * Helper function to encode a remote ID that is safe to use within 
 	 * silverstripe
 	 * 
@@ -257,6 +277,3 @@ class ExternalContentSource extends DataObject
 		return base64_decode($id);
 	}
 }
-
-
-?>
