@@ -9,18 +9,16 @@
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license http://silverstripe.org/bsd-license/
  */
-class ExternalContentPage extends Page
-{
+class ExternalContentPage extends Page {
+
 	public static $db = array(
 		'ExternalContentRoot' => 'Varchar(128)',
 	);
-
 	public static $has_one = array(
-		// 'ExternalContent' => 'ExternalContentSource'
+			// 'ExternalContent' => 'ExternalContentSource'
 	);
 
-	public function getCMSFields()
-	{
+	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
 		$fields->addFieldToTab('Root.Content.Main', new ExternalTreeDropdownField('ExternalContentRoot', _t('ExternalContentPage.CONTENT_SOURCE', 'External Content Source'), 'ExternalContentSource'));
@@ -35,11 +33,10 @@ class ExternalContentPage extends Page
 	 * (non-PHPdoc)
 	 * @see sapphire/core/model/SiteTree#Link($action)
 	 */
-	public function RelativeLink()
-	{
+	public function RelativeLink() {
 		$remoteObject = $this->ContentItem();
 		if (!$remoteObject) {
-			
+
 			return parent::RelativeLink();
 		}
 		return $remoteObject->RelativeLink();
@@ -52,14 +49,13 @@ class ExternalContentPage extends Page
 	 * @var ExternalContentItem
 	 */
 	private $requestedItem;
-	
+
 	/**
 	 * Get the external content item
 	 * 
 	 * @return DataObject
 	 */
-	public function ContentItem($what='k')
-	{
+	public function ContentItem($what='k') {
 		if ($this->requestedItem) {
 			return $this->requestedItem;
 		}
@@ -90,11 +86,11 @@ class ExternalContentPage extends Page
 	 *
 	 * @return DataObjectSet
 	 */
-	public function Children()
-	{
+	public function Children() {
 		$item = $this->ContentItem();
 		return $item ? $item->stageChildren() : new DataObjectSet();
 	}
+
 }
 
 /**
@@ -103,8 +99,7 @@ class ExternalContentPage extends Page
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  *
  */
-class ExternalContentPage_Controller extends Page_Controller
-{
+class ExternalContentPage_Controller extends Page_Controller {
 	const URL_STUB = 'extcon';
 
 	public static $allowed_actions = array(
@@ -112,19 +107,17 @@ class ExternalContentPage_Controller extends Page_Controller
 		'download',
 	);
 
-	public function init()
-	{
+	public function init() {
 		parent::init();
 	}
-	
+
 	/**
 	 * Display an item. 
 	 * 
 	 * @param HTTP_Request $request
 	 * @return String
 	 */
-	public function view($request)
-	{
+	public function view($request) {
 		$object = null;
 		if ($request->param('ID')) {
 			$object = ExternalContent::getDataObjectFor($request->param('ID'));
@@ -134,12 +127,12 @@ class ExternalContentPage_Controller extends Page_Controller
 
 			if ($object && ($object instanceof ExternalContentItem || $object instanceof ExternalContentSource)) {
 				$type = $object instanceof ExternalContentItem ? $object->getType() : 'source';
-				$template = 'ExternalContent_'.get_class($object).'_'.$type;
-				return $this->customise($object)->renderWith(array($template, 'ExternalContent_'.get_class($object), 'ExternalContent', 'Page'));
+				$template = 'ExternalContent_' . get_class($object) . '_' . $type;
+				return $this->customise($object)->renderWith(array($template, 'ExternalContent_' . get_class($object), 'ExternalContent', 'Page'));
 			}
 		}
 
-		echo "Template not found for ".($object ? get_class($object) . ' #'.$object->ID : '');
+		echo "Template not found for " . ($object ? get_class($object) . ' #' . $object->ID : '');
 	}
 
 	/**
@@ -147,15 +140,13 @@ class ExternalContentPage_Controller extends Page_Controller
 	 * 
 	 * @param HTTP_Request $request
 	 */
-	public function download($request)
-	{
+	public function download($request) {
 		if ($request->param('ID')) {
 			$object = ExternalContent::getDataObjectFor($request->param('ID'));
 			if ($object && $object instanceof ExternalContentItem) {
 				$object->streamContent();
-			}	
+			}
 		}
 	}
-}
 
-?>
+}
