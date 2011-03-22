@@ -131,7 +131,7 @@ addfolder.prototype = {
 	onSuccess: function(response) {
 		Ajax.Evaluator(response);
 		// Make it possible to drop files into the new folder
-		if (DropFileItem) {
+		if (typeof(DropFileItem) !== "undefined") {
 			DropFileItem.applyTo('#sitetree li');
 		}
 	},
