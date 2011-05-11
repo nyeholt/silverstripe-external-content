@@ -26,7 +26,9 @@ Director::addRules(60, array(
 	'extcon' => 'ExternalContentPage_Controller',
 ));
 
-Object::useCustomClass('HtmlEditorField_Toolbar', 'ExternalHtmlEditorField_Toolbar');
+// enable this for older versions  of 2.4 and disable the extension
+// Object::useCustomClass('HtmlEditorField_Toolbar', 'ExternalHtmlEditorField_Toolbar');
+
+Object::add_extension('HtmlEditorField_Toolbar', 'ExternalContentHtmlEditorExtension');
 
 set_include_path(dirname(__FILE__).'/thirdparty'.PATH_SEPARATOR.get_include_path());
-?>
