@@ -1,26 +1,5 @@
 <?php
-/**
 
-Copyright (c) 2009, SilverStripe Australia Limited - www.silverstripe.com.au
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of SilverStripe nor the names of its contributors may be used to endorse or promote products derived from this software 
-      without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
-STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
-OF SUCH DAMAGE.
- 
- */
- 
 /**
  * A class that represents any kind of an external content source where the 
  * data can be represented in a tree state
@@ -32,19 +11,18 @@ OF SUCH DAMAGE.
  * access
  * 
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * @license BSD License http://silverstripe.org/bsd-license
  *
  */
-class ExternalContentSource extends DataObject
-{
-	public static $db = array (
+class ExternalContentSource extends DataObject {
+
+	public static $db = array(
 		'Name' => 'Text',
 		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?
 	);
-	
 	static $defaults = array(
 		'ParentID' => '0'
 	);
-
 	static $extensions = array(
 		"Hierarchy",
 	);
@@ -60,33 +38,31 @@ class ExternalContentSource extends DataObject
 	 * @param String $objectId
 	 * @return DataObject
 	 */
-	public function getObject($objectId)
-	{
+	public function getObject($objectId) {
 		throw new Exception("Child classes MUST provide an implementation of getObject()");
 	}
-	
+
 	/**
 	 * Gets the root item of this content source (used in templates if there's
 	 * not one specified)
 	 *  
 	 * @return ExternalContentItem
 	 */
-	public function getRoot()
-	{
+	public function getRoot() {
 		throw new Exception("Child classes MUST override this method");
 	}
-	
+
 	/*
 	 * The following overrides are mostly placeholders, content 
 	 * sources aren't really referred to by URL directly 
 	 */
-	
+
 	function Link($action = null) {
 		return Director::baseURL() . $this->RelativeLink($action);
 	}
 
-	function RelativeLink($action = null){
-		return ExternalContentPage_Controller::URL_STUB.'/view/'.$this->ID;
+	function RelativeLink($action = null) {
+		return ExternalContentPage_Controller::URL_STUB . '/view/' . $this->ID;
 	}
 
 	function TreeTitle() {
@@ -100,8 +76,7 @@ class ExternalContentSource extends DataObject
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)
 	 * @return FieldSet
 	 */
-	public function getCMSFields()
-	{
+	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
 		$fields->removeByName('ParentID');
@@ -123,8 +98,7 @@ class ExternalContentSource extends DataObject
 	 * 
 	 * @return int
 	 */
-	public function numChildren()
-	{
+	public function numChildren() {
 		return 1;
 	}
 
@@ -136,15 +110,14 @@ class ExternalContentSource extends DataObject
 	 * depending on where they've chosen to import to. 
 	 * 
 	 * @param String $target
-	 *			The type of the target we're importing to (SiteTree, File, User etc)
+	 * 			The type of the target we're importing to (SiteTree, File, User etc)
 	 * 
 	 * @return ExternalContentImporter
 	 */
-	public function getContentImporter($target=null)
-	{
+	public function getContentImporter($target=null) {
 		return null;
 	}
-	
+
 	/**
 	 * Return an array of import locations that the importer for
 	 * this content source supports. For example, an alfresco content
@@ -160,8 +133,7 @@ class ExternalContentSource extends DataObject
 	 * 
 	 * @return array
 	 */
-	public function allowedImportTargets()
-	{
+	public function allowedImportTargets() {
 		return array();
 	}
 
@@ -183,8 +155,7 @@ class ExternalContentSource extends DataObject
 	 * 
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
-	public function canEdit()
-	{
+	public function canEdit() {
 		return true;
 	}
 
@@ -196,8 +167,7 @@ class ExternalContentSource extends DataObject
 	 * 
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
-	public function canView()
-	{
+	public function canView() {
 		return true;
 	}
 
@@ -229,13 +199,13 @@ class ExternalContentSource extends DataObject
 		$children = new DataObjectSet();
 		return $children;
 	}
-	
+
 	/**
 	 * Handle a children call by retrieving from stageChildren
 	 */
 	public function Children() {
 		static $children;
-		
+
 		if (!$children) {
 			$children = new DataObjectSet();
 			$kids = $this->stageChildren();
@@ -249,7 +219,7 @@ class ExternalContentSource extends DataObject
 		}
 		return $children;
 	}
-	
+
 	/**
 	 * Helper function to encode a remote ID that is safe to use within 
 	 * silverstripe
@@ -259,11 +229,10 @@ class ExternalContentSource extends DataObject
 	 * @return string
 	 * 			A safely encoded ID
 	 */
-	public function encodeId($id)
-	{
-		return base64_encode($id); 
+	public function encodeId($id) {
+		return base64_encode($id);
 	}
-	
+
 	/**
 	 * Decode an ID encoded by the above encodeId method
 	 * 
@@ -272,8 +241,7 @@ class ExternalContentSource extends DataObject
 	 * @return String
 	 * 			A decoded ID
 	 */
-	public function decodeId($id)
-	{
+	public function decodeId($id) {
 		return base64_decode($id);
 	}
 }

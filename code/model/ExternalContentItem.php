@@ -1,25 +1,4 @@
 <?php
-/**
-
-Copyright (c) 2009, SilverStripe Australia Limited - www.silverstripe.com.au
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the 
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of SilverStripe nor the names of its contributors may be used to endorse or promote products derived from this software 
-      without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
-STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
-OF SUCH DAMAGE.
- 
-*/
 
 /**
  * Parent class for all ExternalContentItems. 
@@ -36,27 +15,25 @@ OF SUCH DAMAGE.
  * contained CMIS object and maps back and forward from that). 
  * 
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * @license BSD License http://silverstripe.org/bsd-license
  */
-class ExternalContentItem extends DataObject
-{
+class ExternalContentItem extends DataObject {
+
 	public static $db = array(
 	);
-
 	static $extensions = array(
 		"Hierarchy",
 	);
-
 	protected $ownerId;
-	
+
 	/**
 	 * The ID of this item in the remote system
 	 * 
 	 * @var mixed
 	 */
 	protected $externalId;
-	
-	public function setOwnerId($id)
-	{
+
+	public function setOwnerId($id) {
 		$this->ownerId = $id;
 	}
 
@@ -79,20 +56,19 @@ class ExternalContentItem extends DataObject
 	 * 			some systems loading up entire representations when you make 
 	 * 			a call to 'getChildren', for example. 
 	 */
-	public function __construct($source=null, $id=null)
-	{
+	public function __construct($source=null, $id=null) {
 		parent::__construct();
 		if ($source) {
 			$this->source = $source;
 			$this->externalId = $id;
 			// if we are here, then we have been created in context of a parent, which also
 			// means there's a compound ID, so lets get that
-			$this->ID = $this->source->ID.'|'.$this->source->encodeId($id);
+			$this->ID = $this->source->ID . '|' . $this->source->encodeId($id);
 			$this->ShowInMenus = $this->source->ShowContentInMenu;
 			$this->init();
 		}
 	}
-	
+
 	/**
 	 * Get the type of this external object. 
 	 * 
@@ -102,15 +78,15 @@ class ExternalContentItem extends DataObject
 	 * @return String
 	 */
 	public function getType() {
-		throw new Exception("Please implement ".get_class($this)."::getType()");
+		throw new Exception("Please implement " . get_class($this) . "::getType()");
 	}
 
 	/**
 	 * Initialise this object based on its source object
 	 */
 	protected function init() {
+		
 	}
-
 
 	/**
 	 * Get the content source for this item
@@ -127,7 +103,7 @@ class ExternalContentItem extends DataObject
 	 * @return boolean
 	 */
 	public function exists() {
-		return !is_null($this->ID);
+		return!is_null($this->ID);
 	}
 
 	/**
@@ -138,7 +114,7 @@ class ExternalContentItem extends DataObject
 	 * @return String
 	 */
 	function Link($action = null) {
-		return ExternalContentPage_Controller::URL_STUB.'/view/'.$this->ID;
+		return ExternalContentPage_Controller::URL_STUB . '/view/' . $this->ID;
 	}
 
 	/**
@@ -148,8 +124,8 @@ class ExternalContentItem extends DataObject
 	 * @param $action
 	 * @return String
 	 */
-	function RelativeLink($action = null){
-		return ExternalContentPage_Controller::URL_STUB.'/view/'.$this->ID;
+	function RelativeLink($action = null) {
+		return ExternalContentPage_Controller::URL_STUB . '/view/' . $this->ID;
 	}
 
 	/**
@@ -165,30 +141,27 @@ class ExternalContentItem extends DataObject
 	 * 
 	 * @return string
 	 */
-	public function DownloadLink()
-	{
+	public function DownloadLink() {
 		// get the base URL, prepend with the external content 
 		// controller /download action and add this object's id
-		return ExternalContentPage_Controller::URL_STUB.'/download/'.$this->ID;
+		return ExternalContentPage_Controller::URL_STUB . '/download/' . $this->ID;
 	}
-	
+
 	/**
 	 * Get the importer for this content item
 	 * 
 	 * @return ExternalContentImporter
 	 */
-	public function getContentImporter($target=null)
-	{
+	public function getContentImporter($target=null) {
 		return $this->source->getContentImporter($target);
 	}
-	
+
 	/**
 	 * Where can this content be imported to? 
 	 * 
 	 * @return array
 	 */
-	public function allowedImportTargets()
-	{
+	public function allowedImportTargets() {
 		return $this->source->allowedImportTargets();
 	}
 
@@ -196,27 +169,25 @@ class ExternalContentItem extends DataObject
 	 * An overrideable method to return the arbitrary 'content' of this
 	 * node. Child classes should implement their own version
 	 */
-	public function Content()
-	{
+	public function Content() {
+		
 	}
 
 	/**
 	 * Called to stream this content item (if it is streamable)
 	 * 
 	 */
-	public function streamContent()
-	{
+	public function streamContent() {
 		throw new Exception("This object cannot be streamed");
 	}
-	
+
 	/**
 	 * Always return at least one as we never know til we load
 	 * whether this item has children or not
 	 * 
 	 * @return int
 	 */
-	public function numChildren()
-	{
+	public function numChildren() {
 		return 1;
 	}
 
@@ -230,21 +201,21 @@ class ExternalContentItem extends DataObject
 	public function stageChildren($showAll = false) {
 		if ($this->Title != 'Content Root' && $this->source) {
 			$children = new DataObjectSet();
-			$item = new ExternalContentItem($this->source, $this->Title.'1');
-			$item->Title = $this->Title.'1';
+			$item = new ExternalContentItem($this->source, $this->Title . '1');
+			$item->Title = $this->Title . '1';
 			$item->MenuTitle = $item->Title;
 
 			$children->push($item);
 			return $children;
 		}
 	}
-	
+
 	/**
 	 * Handle a children call by retrieving from stageChildren
 	 */
 	public function Children() {
 		static $children;
-		
+
 		if (!$children) {
 			$children = new DataObjectSet();
 			$kids = $this->stageChildren();
@@ -258,20 +229,19 @@ class ExternalContentItem extends DataObject
 		}
 		return $children;
 	}
-	
+
 	/**
 	 * For now just show a field that says this can't be edited
 	 * 
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)
 	 */
-	public function getCMSFields()
-	{
-			$fields = new FieldSet(
-			new TabSet("Root",
-				new Tab('Details',
-					new LiteralField("ExternalContentItem_Alert", _t('ExternalContent.REMOTE_ITEM', 'This is a remote content item'))
-				)
-			)
+	public function getCMSFields() {
+		$fields = new FieldSet(
+						new TabSet("Root",
+								new Tab('Details',
+										new LiteralField("ExternalContentItem_Alert", _t('ExternalContent.REMOTE_ITEM', 'This is a remote content item'))
+								)
+						)
 		);
 
 		if (count($this->remoteProperties)) {
@@ -280,13 +250,13 @@ class ExternalContentItem extends DataObject
 					continue;
 				}
 				$value = (string) $value;
-				$fields->addFieldToTab('Root.Details', new ReadonlyField($name, _t('ExternalContentItem.'.$name, $name), $value));
+				$fields->addFieldToTab('Root.Details', new ReadonlyField($name, _t('ExternalContentItem.' . $name, $name), $value));
 			}
 		}
 
 		return $fields;
 	}
-	
+
 	/**
 	 * We flag external content as being editable so it's 
 	 * accessible in the backend, but the individual 
@@ -296,8 +266,7 @@ class ExternalContentItem extends DataObject
 	 * 
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
-	public function canEdit()
-	{
+	public function canEdit() {
 		return $this->source->canEdit();
 	}
 
@@ -309,8 +278,7 @@ class ExternalContentItem extends DataObject
 	 * 
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
-	public function canView()
-	{
+	public function canView() {
 		return $this->source->canView();
 	}
 
@@ -330,16 +298,15 @@ class ExternalContentItem extends DataObject
 	 * @var array
 	 */
 	protected $remoteProperties;
-	
+
 	/**
 	 * Overriding the default behaviour to not worry about how it 
 	 * needs to work with the DB
 	 * 
 	 * @see sapphire/core/ViewableData#__set($property, $value)
 	 */
-	public function __set($prop, $val)
-	{
-		$this->remoteProperties[$prop] = $val;		
+	public function __set($prop, $val) {
+		$this->remoteProperties[$prop] = $val;
 	}
 
 	/**
@@ -347,43 +314,40 @@ class ExternalContentItem extends DataObject
 	 * 
 	 * @see sapphire/core/ViewableData#__get($property)
 	 */
-	function __get($prop)
-	{
+	function __get($prop) {
 		if (isset($this->remoteProperties[$prop])) {
 			return $this->remoteProperties[$prop];
 		}
-		
+
 		$val = parent::__get($prop);
-		
+
 		if (!$val) {
-	
+
 			if ($this->source) {
 				// get it from there
 				return $this->source->$prop;
 			}
 		}
-		
-		return $val;		
+
+		return $val;
 	}
-	
+
 	/**
 	 * Override to let remote objects figure out whether they have a 
 	 * field or not
 	 * 
 	 * @see sapphire/core/model/DataObject#hasField($field)
 	 */
-	public function hasField($field) 
-	{
+	public function hasField($field) {
 		return isset($this->remoteProperties[$field]);
 	}
-	
+
 	/**
 	 * Get all the remote properties
 	 * 
 	 * @return array
 	 */
-	public function getRemoteProperties()
-	{
+	public function getRemoteProperties() {
 		return $this->remoteProperties;
 	}
 
@@ -395,8 +359,7 @@ class ExternalContentItem extends DataObject
 	 * @param $join A join expression.  May or may not be relevant.
 	 * @param $limit A limit expression, either "(count)", or "(start), (count)"
 	 */
-	function instance_get($filter = "", $sort = "", $join = "", $limit = "", $containerClass = "DataObjectSet")
-	{
+	function instance_get($filter = "", $sort = "", $join = "", $limit = "", $containerClass = "DataObjectSet") {
 		
 	}
 
@@ -408,8 +371,7 @@ class ExternalContentItem extends DataObject
 	 * @param $join A join expression.  May or may not be relevant.
 	 * @param $limit A limit expression, either "(count)", or "(start), (count)"
 	 */
-	function instance_get_one($filter, $sort = "")
-	{
+	function instance_get_one($filter, $sort = "") {
 		
 	}
 
@@ -417,29 +379,25 @@ class ExternalContentItem extends DataObject
 	 * Write the current object back to the database.  It should know whether this is a new object, in which case this would
 	 * be an insert command, or if this is an existing object queried from the database, in which case thes would be 
 	 */
-	function write()
-	{
+	function write() {
 		
 	}
-	
+
 	/**
 	 * Remove this object from the database.  Doesn't do anything if this object isn't in the database.
 	 */
-	function delete()
-	{
+	function delete() {
 		
 	}
-	
+
 	/**
 	 * Save content from a form into a field on this data object.
 	 * Since the data comes straight from a form it can't be trusted and will need to be validated / escaped.'
 	 */
-	function setCastedField($fieldName, $val)
-	{
+	function setCastedField($fieldName, $val) {
 		
 	}
 
 }
-
 
 ?>
