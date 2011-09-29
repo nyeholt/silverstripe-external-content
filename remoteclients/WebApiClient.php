@@ -235,7 +235,7 @@ class WebApiClient
 			// set the encoding type
 			$client->setEncType(isset($methodDetails['enctype']) ? $methodDetails['enctype'] : Zend_Http_Client::ENC_URLENCODED);
 	
-			$paramMethod = 'setParameter'.$requestType;
+			$paramMethod = $requestType == 'GET' ? 'setParameterGet' : 'setParameterPost';
 			if ($this->globalParams) {
 				foreach ($this->globalParams as $key => $value) {
 					$client->$paramMethod($key, $value);
@@ -262,10 +262,14 @@ class WebApiClient
 
 			if (isset($methodDetails['post'])) {
 				foreach ($methodDetails['post'] as $k => $v) {
-					$client->setParameterGet($k, $v);
+					$client->setParameterPost($k, $v);
 				}
 			}
-	
+			
+			if (isset($methodDetails['raw']) && $methodDetails['raw']) {
+				$client->setRawData($args['raw_body']);
+			}
+
 			// request away
 			$response = $client->request();
 			

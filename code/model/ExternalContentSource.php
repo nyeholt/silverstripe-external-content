@@ -20,6 +20,7 @@ class ExternalContentSource extends DataObject {
 		'Name' => 'Text',
 		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?
 	);
+	
 	static $defaults = array(
 		'ParentID' => '0'
 	);

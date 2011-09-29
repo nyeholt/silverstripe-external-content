@@ -1,5 +1,8 @@
 <?php
 
+define('EXTERNALCONTENT', 'external-content');
+
+
 /**
  * Backend administration pages for the external content module
  * 
@@ -182,15 +185,13 @@ class ExternalContentAdmin extends LeftAndMain {
 	}
 
 	/**
-	 * Return the form that displays the details of a folder, including a file list and fields for editing the folder name.
+	 * Return the form for editing
 	 */
 	function getEditForm($id) {
 		$record = null;
 		if ($id && $id != "root") {
 			$record = ExternalContent::getDataObjectFor($id);
-		} else {
-			
-		}
+		} 
 
 		if ($record) {
 			$fields = $record->getCMSFields();
@@ -233,9 +234,9 @@ class ExternalContentAdmin extends LeftAndMain {
 
 			$actions = new FieldSet();
 			// Only show save button if not 'assets' folder
-			if ($record->canEdit() && !($record instanceof ExternalContentItem)) {
+			if ($record->canEdit()) {
 				$actions = new FieldSet(
-								new FormAction('save', _t('ExternalContent.SAVE', 'Save'))
+					new FormAction('save', _t('ExternalContent.SAVE', 'Save'))
 				);
 			}
 
@@ -259,6 +260,37 @@ class ExternalContentAdmin extends LeftAndMain {
 			$fields = new FieldSet();
 			return new Form($this, "EditForm", $fields, new FieldSet());
 		}
+	}
+	
+	/**
+	 * Save the content source/item
+	 *
+	 * @param array $urlParams
+	 * @param Form $form
+	 * @param type $request 
+	 */
+	public function save($urlParams, Form $form, $request) {
+		$record = null;
+		if (isset($urlParams['ID'])) {
+			$record = ExternalContent::getDataObjectFor($urlParams['ID']);
+		}
+
+		if (!$record) {
+			return parent::save($urlParams, $form);
+		}
+
+		if ($record->canEdit()) {
+			// lets load the params that have been sent and set those that have an editable mapping
+			$editable = $record->editableFieldMapping();
+			$form->saveInto($record, array_keys($editable));
+			$record->remoteWrite();
+			FormResponse::status_message(_t('LeftAndMain.SAVEDUP',"Saved"), "good");
+		} else {
+			FormResponse::status_message(_t('ExternalContent.NOT_SAVED',"You do not have write access to that"), "bad");
+		}
+
+		FormResponse::update_status($record->Status);
+		return FormResponse::respond();
 	}
 
 	/**

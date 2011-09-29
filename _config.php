@@ -1,7 +1,5 @@
 <?php
 
-define('EXTERNALCONTENT', 'external-content');
-
 Director::addRules(60, array(
 	'extadmin' => 'ExternalContentAdmin',
 	'extcon' => 'ExternalContentPage_Controller',

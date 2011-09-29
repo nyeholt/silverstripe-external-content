@@ -32,8 +32,9 @@ class ExternalContent {
 	 * @return DataObject
 	 */
 	public static function getDataObjectFor($id) {
-		if ($id == 'root')
+		if ($id == 'root') {
 			return null;
+		}
 
 		$obj = null;
 

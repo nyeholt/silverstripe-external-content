@@ -237,24 +237,49 @@ class ExternalContentItem extends DataObject {
 	 */
 	public function getCMSFields() {
 		$fields = new FieldSet(
-						new TabSet("Root",
-								new Tab('Details',
-										new LiteralField("ExternalContentItem_Alert", _t('ExternalContent.REMOTE_ITEM', 'This is a remote content item'))
-								)
-						)
+			new TabSet("Root")
 		);
 
 		if (count($this->remoteProperties)) {
+			$mapping = $this->editableFieldMapping();
 			foreach ($this->remoteProperties as $name => $value) {
-				if (is_array($value) || is_object($value)) {
-					continue;
+				$field = null;
+				if (isset($mapping[$name])) {
+					$field = $mapping[$name];
+					if (is_string($field)) {
+						$field = new $field($name, $this->fieldLabel($name), $value);
+					}
+				} else {
+					$value = (string) $value;
+					$field = new ReadonlyField($name, _t('ExternalContentItem.' . $name, $name), $value);
+					
 				}
-				$value = (string) $value;
-				$fields->addFieldToTab('Root.Details', new ReadonlyField($name, _t('ExternalContentItem.' . $name, $name), $value));
+
+				if ($field) {
+					$fields->addFieldToTab('Root.Details', $field);
+				}
 			}
 		}
 
 		return $fields;
+	}
+	
+	/**
+	 * Return a mapping of remote field name => field type
+	 * 
+	 * Note that this also defines the list of fields on the remote object that can be edited by end users
+	 * and is examined before a form save is triggered
+	 * 
+	 */
+	public function editableFieldMapping() {
+		return array();
+	}
+	
+	/**
+	 * Write back to the content source
+	 */
+	public function remoteWrite() {
+		
 	}
 
 	/**
@@ -374,6 +399,7 @@ class ExternalContentItem extends DataObject {
 	function instance_get_one($filter, $sort = "") {
 		
 	}
+	
 
 	/**
 	 * Write the current object back to the database.  It should know whether this is a new object, in which case this would
@@ -395,9 +421,9 @@ class ExternalContentItem extends DataObject {
 	 * Since the data comes straight from a form it can't be trusted and will need to be validated / escaped.'
 	 */
 	function setCastedField($fieldName, $val) {
-		
+		$mapping = $this->editableFieldMapping();
+		if (isset($mapping[$fieldName])) {
+			$this->$fieldName = $val;
+		}
 	}
-
 }
-
-?>

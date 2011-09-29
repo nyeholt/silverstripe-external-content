@@ -5,7 +5,7 @@
  * @license http://silverstripe.org/bsd-license
  * @author Marcus Nyeholt <marcus@silverstripe.com.au> 
  */
-class SiteUtils {
+class ECUtils {
 	public function __construct() {}
 
 	/**
