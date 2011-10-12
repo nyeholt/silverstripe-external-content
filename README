@@ -12,6 +12,7 @@ Requirements
 -----------------------------------------------
 SilverStripe 2.4.x
 FileSystem Connector module (for a default connector implementation)
+PHP MB String module (should be default on most systems)
 
 Documentation
 -----------------------------------------------

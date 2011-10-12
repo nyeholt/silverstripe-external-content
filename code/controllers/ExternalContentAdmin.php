@@ -281,9 +281,15 @@ class ExternalContentAdmin extends LeftAndMain {
 
 		if ($record->canEdit()) {
 			// lets load the params that have been sent and set those that have an editable mapping
-			$editable = $record->editableFieldMapping();
-			$form->saveInto($record, array_keys($editable));
-			$record->remoteWrite();
+			if ($record->hasMethod('editableFieldMapping')) {
+				$editable = $record->editableFieldMapping();
+				$form->saveInto($record, array_keys($editable));
+				$record->remoteWrite();
+			} else {
+				$form->saveInto($record);
+				$record->write();
+			}
+			
 			FormResponse::status_message(_t('LeftAndMain.SAVEDUP',"Saved"), "good");
 		} else {
 			FormResponse::status_message(_t('ExternalContent.NOT_SAVED',"You do not have write access to that"), "bad");
