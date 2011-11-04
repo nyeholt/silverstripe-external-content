@@ -61,8 +61,8 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 		foreach ($children as $child) {
 			$count++;
 			if ($count > 20) {
-				$this->totalSteps = 20;
-				return QueuedJob::LARGE;
+				$this->totalSteps = $count;
+				return QueuedJob::QUEUED;
 			}
 
 			$subChildren = $child->stageChildren();
@@ -70,8 +70,8 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 				foreach ($subChildren as $sub) {
 					$count++;
 					if ($count > 20) {
-						$this->totalSteps = 20;
-						return QueuedJob::LARGE;
+						$this->totalSteps = $count;
+						return QueuedJob::QUEUED;
 					}
 				}
 			}
