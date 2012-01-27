@@ -10,7 +10,6 @@
 			pt('sitetree').getTreeNodeByIdx(pageID).ajaxExpansion();
 		});
 
-		if ($('#Form_EditForm_Migrate').length) {
 			// bind the migrate form so we can properly handle a migrate
 			$('#Form_EditForm_Migrate').livequery(function () {
 				$(this).click(function () {
@@ -46,7 +45,6 @@
 				});
 
 			});
-		}
 		
 	});
 })(jQuery, $);
