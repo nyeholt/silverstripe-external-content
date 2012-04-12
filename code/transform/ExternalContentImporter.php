@@ -11,10 +11,6 @@ abstract class ExternalContentImporter extends Object {
 	protected $contentTransforms = array();
 	protected $params = array();
 
-	public function __construct() {
-		
-	}
-
 	/**
 	 * @return array
 	 */
