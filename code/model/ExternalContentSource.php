@@ -178,7 +178,8 @@ class ExternalContentSource extends DataObject {
 	 * @return bool
 	 */
 	public function canImport() {
-		return true;
+		$importer =  $this->getContentImporter();
+		return $importer != null;
 	}
 
 	/**

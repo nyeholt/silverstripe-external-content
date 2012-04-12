@@ -170,13 +170,19 @@ class ExternalContentAdmin extends LeftAndMain {
 				$selected = false;
 			}
 
-			$importer = null;
-			$importer = $from->getContentImporter($targetType);
+			if (isset($request['Repeat'])) {
+				$job = new ScheduledExternalImportJob($request['Repeat'], $from, $target, $includeSelected, $includeChildren, $targetType, $duplicates, $request);
+				singleton('QueuedJobService')->queueJob($job);
+			} else {
+				$importer = null;
+				$importer = $from->getContentImporter($targetType);
 
-			if ($importer) {
-				$importer->import(
-						$from, $target, $includeSelected, $includeChildren, $duplicates, $request);
+				if ($importer) {
+					$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates, $request);
+				}
 			}
+			
+			
 			$result['message'] = "Starting import to " . $target->Title;
 			$result['status'] = true;
 		}
@@ -221,6 +227,20 @@ class ExternalContentAdmin extends LeftAndMain {
 				);
 
 				$fields->addFieldToTab('Root.Import', new OptionsetField("DuplicateMethod", _t('ExternalContent.DUPLICATES', 'Select how duplicate items should be handled'), $duplicateOptions));
+				
+				if (class_exists('QueuedJobDescriptor')) {
+					$repeats = array(
+						0		=> 'None',
+						300		=> '5 minutes',
+						900		=> '15 minutes',
+						1800	=> '30 minutes',
+						3600	=> '1 hour',
+						33200	=> '12 hours',
+						86400	=> '1 day',
+						604800	=> '1 week',
+					);
+					$fields->addFieldToTab('Root.Import', new DropdownField('Repeat', 'Repeat import each ', $repeats));
+				}
 
 				$migrateButton = '<p><input type="submit" id="Form_EditForm_Migrate" name="action_migrate" value="' . _t('ExternalContent.IMPORT', 'Start Importing') . '" /></p>';
 				$fields->addFieldToTab('Root.Import', new LiteralField('migrate', $migrateButton));

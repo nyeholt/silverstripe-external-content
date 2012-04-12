@@ -1,3 +1,9 @@
+2012-04-12 v0.5.0
+-----------------
+
+* Added ability to repeatedly import from an external content source on a 
+  schedule
+
 2011-09-29 v0.4.0
 -----------------
 

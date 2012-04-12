@@ -68,6 +68,15 @@ class ExternalContentItem extends DataObject {
 			$this->init();
 		}
 	}
+	
+	/**
+	 * Return the ID of the item in its remote system
+	 *
+	 * @return string
+	 */
+	public function getExternalId() {
+		return $this->externalId;
+	}
 
 	/**
 	 * Get the type of this external object. 

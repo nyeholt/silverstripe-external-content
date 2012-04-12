@@ -6,7 +6,7 @@
  * @license BSD License http://silverstripe.org/bsd-license
  *
  */
-abstract class ExternalContentImporter {
+abstract class ExternalContentImporter extends Object {
 
 	protected $contentTransforms = array();
 	protected $params = array();
@@ -33,7 +33,7 @@ abstract class ExternalContentImporter {
 	 * 			How to handle duplication 
 	 * @param array $params All parameters passed with the import request.
 	 */
-	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='overwrite', $params = array()) {
+	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='Overwrite', $params = array()) {
 		$this->params = $params;
 
 		// if the queuedjobs module exists, use that
@@ -81,6 +81,8 @@ abstract class ExternalContentImporter {
 				$transformer = $this->contentTransforms[$pageType];
 				$result = $transformer->transform($child, $parent, $duplicateStrategy);
 
+				$this->extend('onAfterImport', $result);
+				
 				// if there's more, then transform them
 				if ($includeChildren && $result && $result->children && count($result->children)) {
 					// import the children
