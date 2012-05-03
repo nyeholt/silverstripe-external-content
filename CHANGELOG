@@ -1,3 +1,9 @@
+2012-05-02 v0.5.1
+-----------------
+
+* Fix issue where 0 repeat time was being interpreted as meaning to create
+  a scheduled import
+
 2012-04-12 v0.5.0
 -----------------
 

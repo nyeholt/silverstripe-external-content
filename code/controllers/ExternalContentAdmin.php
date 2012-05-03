@@ -170,7 +170,7 @@ class ExternalContentAdmin extends LeftAndMain {
 				$selected = false;
 			}
 
-			if (isset($request['Repeat'])) {
+			if (isset($request['Repeat']) && $request['Repeat'] > 0) {
 				$job = new ScheduledExternalImportJob($request['Repeat'], $from, $target, $includeSelected, $includeChildren, $targetType, $duplicates, $request);
 				singleton('QueuedJobService')->queueJob($job);
 			} else {
