@@ -38,38 +38,46 @@ class ExternalContentAdmin extends LeftAndMain {
 		'view'
 	);
 
-	/**
-	 * Set up the controller, in particular, re-sync the File database with the assets folder./
-	 */
-	function init() {
+	public function getCMSTreeTitle(){
+		return 'Connectors';
+	}
+
+	public function init(){
 		parent::init();
 
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-		Requirements::javascript('external-content/javascript/ExternalContent.js');
-		Requirements::javascript('external-content/javascript/ExternalContent.jquery.js');
-
-		Requirements::javascript(CMS_DIR . "/javascript/CMSMain_upload.js");
-		Requirements::javascript(CMS_DIR . "/javascript/Upload.js");
-		Requirements::javascript(CMS_DIR . "/thirdparty/swfupload/swfupload.js");
-
-		Requirements::javascript(THIRDPARTY_DIR . "/greybox/AmiJS.js");
-		Requirements::javascript(THIRDPARTY_DIR . "/greybox/greybox.js");
-		Requirements::css(THIRDPARTY_DIR . "/greybox/greybox.css");
+		Requirements::css(CMS_DIR . '/css/screen.css');
+		
+		Requirements::combine_files(
+			'cmsmain.js',
+			array_merge(
+				array(
+					CMS_DIR . '/javascript/CMSMain.js',
+					CMS_DIR . '/javascript/CMSMain.EditForm.js',
+					CMS_DIR . '/javascript/CMSMain.AddForm.js',
+					CMS_DIR . '/javascript/CMSPageHistoryController.js',
+					CMS_DIR . '/javascript/CMSMain.Tree.js',
+					CMS_DIR . '/javascript/SilverStripeNavigator.js',
+					CMS_DIR . '/javascript/SiteTreeURLSegmentField.js'
+				),
+				Requirements::add_i18n_javascript(CMS_DIR . '/javascript/lang', true, true)
+			)
+		);
 	}
+
 
 	/**
 	 * Overridden to properly output a value and end, instead of
 	 * letting further headers (X-Javascript-Include) be output
 	 */
-	public function pageStatus() {
-		// If no ID is set, we're merely keeping the session alive
-		if (!isset($_REQUEST['ID'])) {
-			echo '{}';
-			return;
-		}
+	// public function pageStatus() {
+	// 	// If no ID is set, we're merely keeping the session alive
+	// 	if (!isset($_REQUEST['ID'])) {
+	// 		echo '{}';
+	// 		return;
+	// 	}
 
-		parent::pageStatus();
-	}
+	// 	parent::pageStatus();
+	// }
 
 	/**
 	 * Return fake-ID "root" if no ID is found (needed for creating providers... ?)
@@ -105,7 +113,7 @@ class ExternalContentAdmin extends LeftAndMain {
 	 * Return the edit form
 	 * @see cms/code/LeftAndMain#EditForm()
 	 */
-	public function EditForm() {
+	public function EditForm($request = null) {
 		HtmlEditorField::include_js();
 
 		$cur = $this->currentPageID();
@@ -193,7 +201,7 @@ class ExternalContentAdmin extends LeftAndMain {
 	/**
 	 * Return the form for editing
 	 */
-	function getEditForm($id) {
+	function getEditForm($id = null, $fields = null) {
 		$record = null;
 		if ($id && $id != "root") {
 			$record = ExternalContent::getDataObjectFor($id);
@@ -252,10 +260,10 @@ class ExternalContentAdmin extends LeftAndMain {
 			$fields->push($hf = new HiddenField("Version"));
 			$hf->setValue(1);
 
-			$actions = new FieldSet();
+			$actions = new FieldList();
 			// Only show save button if not 'assets' folder
 			if ($record->canEdit()) {
-				$actions = new FieldSet(
+				$actions = new FieldList(
 					new FormAction('save', _t('ExternalContent.SAVE', 'Save'))
 				);
 			}
@@ -277,294 +285,19 @@ class ExternalContentAdmin extends LeftAndMain {
 			return $form;
 		} else {
 			// Create a dummy form
-			$fields = new FieldSet();
-			return new Form($this, "EditForm", $fields, new FieldSet());
+			$fields = new FieldList();
+			return new Form($this, "EditForm", $fields, new FieldList());
 		}
 	}
-	
-	/**
-	 * Save the content source/item
-	 *
-	 * @param array $urlParams
-	 * @param Form $form
-	 * @param type $request 
-	 */
-	public function save($urlParams, Form $form, $request) {
-		$record = null;
-		if (isset($urlParams['ID'])) {
-			$record = ExternalContent::getDataObjectFor($urlParams['ID']);
-		}
 
-		if (!$record) {
-			return parent::save($urlParams, $form);
-		}
 
-		if ($record->canEdit()) {
-			// lets load the params that have been sent and set those that have an editable mapping
-			if ($record->hasMethod('editableFieldMapping')) {
-				$editable = $record->editableFieldMapping();
-				$form->saveInto($record, array_keys($editable));
-				$record->remoteWrite();
-			} else {
-				$form->saveInto($record);
-				$record->write();
-			}
-			
-			FormResponse::status_message(_t('LeftAndMain.SAVEDUP',"Saved"), "good");
-		} else {
-			FormResponse::status_message(_t('ExternalContent.NOT_SAVED',"You do not have write access to that"), "bad");
-		}
-
-		FormResponse::update_status($record->Status);
-		return FormResponse::respond();
-	}
-
-	/**
-	 * Return the entire site tree as a nested UL.
-	 * @return string HTML for site tree
-	 */
 	public function SiteTreeAsUL() {
-		$obj = singleton('ExternalContentSource');
-		$number = $obj->markPartialTree(1, null);
-
-		if ($p = $this->currentPage())
-			$obj->markToExpose($p);
-
-		$titleEval = '"<li id=\"record-$child->ID\" class=\"$child->class" . $child->markingClasses() .  ($extraArg->isCurrentPage($child) ? " current" : "") . "\">" . ' .
-				'"<a href=\"" . Controller::join_links(substr($extraArg->Link(),0,-1), "show", $child->ID) . "\" class=\" contents\" >" . $child->Title . "</a>" ';
-
-		$this->generateTreeStylingJS();
-
-		$siteTreeList = $obj->getChildrenAsUL(
-				'', $titleEval, $this, true, 'AllChildrenIncludingDeleted', 'numChildren', true, 1
-		);
-
-		// Wrap the root if needs be
-		$rootLink = $this->Link() . 'show/root';
-		$baseUrl = Director::absoluteBaseURL() . self::$url_segment;
-		if (!isset($rootID)) {
-			$siteTree = "<ul id=\"sitetree\" class=\"tree unformatted\"><li id=\"record-root\" class=\"Root\"><a href=\"$rootLink\"><strong>All Connectors</strong></a>"
-					. $siteTreeList . "</li></ul>";
-		}
-
-		return $siteTree;
+		$html = $this->getSiteTreeFor($this->stat('tree_class', null, 'Children'));
+		$this->extend('updateSiteTreeAsUL', $html);
+		return $html;
 	}
 
-	/**
-	 * Returns a subtree of items underneath the given folder.
-	 *
-	 * We do our own version of returning tree data here - SilverStripe's base functionality is just too greedy
-	 * with data for this to be happy.
-	 */
-	public function getsubtree() {
-		$obj = ExternalContent::getDataObjectFor($_REQUEST['ID']);  //  DataObject::get_by_id('ExternalContentSource', $_REQUEST['ID']);
 
-		if (isset($_GET['debug_profile']))
-			Profiler::mark("ExternalContentAdmin", "getsubtree");
-		$siteTreeList = '';
-		if ($obj) {
-			try {
-				$children = $obj->stageChildren();
-				if ($children) {
-					foreach ($children as $child) {
-						$siteTreeList .= '<li id="record-' . $child->ID . '" class="' . $child->class . ' unexpanded closed">' .
-								'<a href="' . Controller::join_links(substr($this->Link(), 0, -1), "show", $child->ID) . '" class=" contents">' . $child->Title . '</a>';
-					}
-				}
-			} catch (Exception $e) {
-				singleton('ECUtils')->log("Failed creating tree: " . $e->getMessage(), SS_Log::ERR);
-				singleton('ECUtils')->log($e->getTraceAsString(), SS_Log::ERR);
-			}
-		}
-
-		if (isset($_GET['debug_profile']))
-			Profiler::unmark("ExternalContentAdmin", "getsubtree");
-
-		return $siteTreeList;
-	}
-
-	/**
-	 * Stolen from CMSMain and changed to include our custom object
-	 * classes
-	 */
-	public function generateTreeStylingJS() {
-		$classes = ClassInfo::subclassesFor('DataObject');
-		foreach ($classes as $class) {
-			$obj = singleton($class);
-			if ($obj instanceof HiddenClass)
-				continue;
-			if ($icon = $obj->stat('icon'))
-				$iconInfo[$class] = $icon;
-		}
-		$iconInfo['BrokenLink'] = 'cms/images/treeicons/brokenlink';
-
-
-		$js = "var _TREE_ICONS = [];\n";
-
-		foreach ($iconInfo as $class => $icon) {
-
-			// SiteTree::$icon can be set to array($icon, $option)
-			// $option can be "file" or "folder" to force the icon to always be the file or the folder form
-			$option = null;
-			if (is_array($icon))
-				list($icon, $option) = $icon;
-
-			$fileImage = ($option == "folder") ? $icon . '-openfolder.gif' : $icon . '-file.gif';
-			$openFolderImage = $icon . '-openfolder.gif';
-			if (!Director::fileExists($openFolderImage) || $option = "file")
-				$openFolderImage = $fileImage;
-			$closedFolderImage = $icon . '-closedfolder.gif';
-			if (!Director::fileExists($closedFolderImage) || $option = "file")
-				$closedFolderImage = $fileImage;
-
-			$js .= <<<JS
-				_TREE_ICONS['$class'] = {
-					fileIcon: '$fileImage',
-					openFolderIcon: '$openFolderImage',
-					closedFolderIcon: '$closedFolderImage'
-				};
-JS;
-		}
-
-		Requirements::customScript($js);
-	}
-
-	public function getitem() {
-		$this->setCurrentPageID($_REQUEST['ID']);
-		SSViewer::setOption('rewriteHashlinks', false);
-
-		if (isset($_REQUEST['ID'])) {
-			$record = ExternalContent::getDataObjectFor($_REQUEST['ID']);
-			if ($record && !$record->canView())
-				return Security::permissionFailure($this);
-		}
-
-		$form = $this->EditForm();
-
-		if ($form) {
-			return $form->formHtmlContent();
-		}
-
-		return '';
-	}
-
-	/**
-	 * Get the form used to create a new provider
-	 * 
-	 * @return Form
-	 */
-	public function CreateProviderForm() {
-		$classes = ClassInfo::subclassesFor(self::$tree_class);
-		array_shift($classes);
-
-		foreach ($classes as $key => $class) {
-			if (!singleton($class)->canCreate())
-				unset($classes[$key]);
-		}
-
-		$fields = new FieldSet(
-						new HiddenField("ParentID"),
-						new HiddenField("Locale", 'Locale', Translatable::get_current_locale()),
-						new DropdownField("ProviderType", "", $classes)
-		);
-
-		$actions = new FieldSet(
-						new FormAction("addprovider", _t('ExternalContent.CREATE', "Create"))
-		);
-
-		return new Form($this, "CreateProviderForm", $fields, $actions);
-	}
-
-	/**
-	 * Add a new provider (triggered by the ExternalContentAdmin_left template)
-	 * 
-	 * @return unknown_type
-	 */
-	public function addprovider() {
-		// Providers are ALWAYS at the root
-		$parent = 0;
-
-		$name = (isset($_REQUEST['Name'])) ? basename($_REQUEST['Name']) : _t('ExternalContent.NEWCONNECTOR', "New Connector");
-
-		$type = $_REQUEST['ProviderType'];
-		$providerClasses = ClassInfo::subclassesFor(self::$tree_class);
-
-		if (!in_array($type, $providerClasses)) {
-			throw new Exception("Invalid connector type");
-		}
-
-		$parentObj = null;
-
-		// Create object
-		$p = new $type();
-		$p->ParentID = $parent;
-		$p->Name = $p->Title = $name;
-		$p->write();
-
-		if (isset($_REQUEST['returnID'])) {
-			return $p->ID;
-		} else {
-			return $this->returnItemToUser($p);
-		}
-	}
-
-	/**
-	 * Copied from AssetAdmin... 
-	 * 
-	 * @return Form
-	 */
-	function DeleteItemsForm() {
-		$form = new Form(
-						$this,
-						'DeleteItemsForm',
-						new FieldSet(
-								new LiteralField('SelectedPagesNote',
-										sprintf('<p>%s</p>', _t('ExternalContentAdmin.SELECT_CONNECTORS', 'Select the connectors that you want to delete and then click the button below'))
-								),
-								new HiddenField('csvIDs')
-						),
-						new FieldSet(
-								new FormAction('deleteprovider', _t('ExternalContentAdmin.DELCONNECTORS', 'Delete the selected connectors'))
-						)
-		);
-
-		$form->addExtraClass('actionparams');
-
-		return $form;
-	}
-
-	/**
-	 * Delete a folder
-	 */
-	public function deleteprovider() {
-		$script = '';
-		$ids = split(' *, *', $_REQUEST['csvIDs']);
-		$script = '';
-
-		if (!$ids)
-			return false;
-
-		foreach ($ids as $id) {
-			if (is_numeric($id)) {
-				$record = ExternalContent::getDataObjectFor($id);
-				if ($record) {
-					$script .= $this->deleteTreeNodeJS($record);
-					$record->delete();
-					$record->destroy();
-				}
-			}
-		}
-
-		$size = sizeof($ids);
-		if ($size > 1) {
-			$message = $size . ' ' . _t('AssetAdmin.FOLDERSDELETED', 'folders deleted.');
-		} else {
-			$message = $size . ' ' . _t('AssetAdmin.FOLDERDELETED', 'folder deleted.');
-		}
-
-		$script .= "statusMessage('$message');";
-		echo $script;
-	}
 
 }
 

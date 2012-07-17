@@ -20,8 +20,8 @@ class ExternalContentPage extends Page {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$fields->removeFieldFromTab('Root.Content.Main', 'Content');
-		$fields->addFieldToTab('Root.Content.Main', new ExternalTreeDropdownField('ExternalContentRoot', _t('ExternalContentPage.CONTENT_SOURCE', 'External Content Source'), 'ExternalContentSource'));
+		$fields->removeFieldFromTab('Root.Main', 'Content');
+		$fields->addFieldToTab('Root.Main', new ExternalTreeDropdownField('ExternalContentRoot', _t('ExternalContentPage.CONTENT_SOURCE', 'External Content Source'), 'ExternalContentSource'));
 
 		return $fields;
 	}
@@ -33,7 +33,7 @@ class ExternalContentPage extends Page {
 	 * (non-PHPdoc)
 	 * @see sapphire/core/model/SiteTree#Link($action)
 	 */
-	public function RelativeLink() {
+	public function RelativeLink($action = null) {
 		$remoteObject = $this->ContentItem();
 		if (!$remoteObject) {
 
@@ -88,7 +88,7 @@ class ExternalContentPage extends Page {
 	 */
 	public function Children() {
 		$item = $this->ContentItem();
-		return $item ? $item->stageChildren() : new DataObjectSet();
+		return $item ? $item->stageChildren() : new DataList();
 	}
 
 }
