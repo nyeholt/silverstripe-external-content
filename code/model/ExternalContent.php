@@ -10,14 +10,27 @@
  *
  */
 class ExternalContent {
+
+	/**
+	 * The character to partition the compound id
+	 * 
+	 * @var string
+	 */
+	const ID_SEPARATOR = '_';
+
+
 	/**
 	 * The format that externalised content can be referenced by
 	 * 
 	 * @var string
 	 */
-	const ID_FORMAT = "/(\d+)(\|.*)?/";
+	const ID_FORMAT = "/(\d+)(\_.*)?/";
+
 
 	const DEFAULT_CLASS = 'ExternalContentSource';
+
+
+
 
 	/**
 	 * Get the actual object based on a composite ID
@@ -40,7 +53,7 @@ class ExternalContent {
 
 		if (preg_match(self::ID_FORMAT, $id, $matches)) {
 			$id = $matches[1];
-			$composed = isset($matches[2]) ? trim($matches[2], '|') : null;
+			$composed = isset($matches[2]) ? trim($matches[2], self::ID_SEPARATOR) : null;
 			$obj = DataObject::get_by_id(self::DEFAULT_CLASS, $id);
 			if ($composed && $obj) {
 				$obj = $obj->getObject($composed);

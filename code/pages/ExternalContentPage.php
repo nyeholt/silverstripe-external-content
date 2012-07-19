@@ -33,7 +33,7 @@ class ExternalContentPage extends Page {
 	 * (non-PHPdoc)
 	 * @see sapphire/core/model/SiteTree#Link($action)
 	 */
-	public function RelativeLink() {
+	public function RelativeLink($action = null) {
 		$remoteObject = $this->ContentItem();
 		if (!$remoteObject) {
 

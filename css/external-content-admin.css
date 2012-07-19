@@ -1,0 +1,23 @@
+.cms-container .ExternalContentAdmin .cms-edit-form .ui-tabs-nav li a{
+    font-weight: bold;
+    line-height: 16px;
+    padding: 8px 20px;
+}
+
+.cms-container .ExternalContentAdmin .cms-edit-form .ui-tabs-nav{
+    border-bottom: medium none;
+    float: right;
+    margin: 8px 0 -1px;
+    padding: 0 24px 0 0;
+}
+
+.cms-container .ExternalContentAdmin .ss-tabset .ui-tabs-panel{
+    background: none repeat scroll 0 0 #E6EAED;
+    border-top: 1px solid #C0C0C2;
+    clear: both;
+}
+
+.cms-container .ExternalContentAdmin .cms-edit-form{
+    background: none repeat scroll 0 0 #E6EAED;
+    padding: 1em 1.4em;
+}

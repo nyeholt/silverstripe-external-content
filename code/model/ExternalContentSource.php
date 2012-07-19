@@ -143,7 +143,7 @@ class ExternalContentSource extends DataObject {
 	 *
 	 * @return bool
 	 */
-	public function canCreate() {
+	public function canCreate($member = null) {
 		return true;
 	}
 
@@ -156,7 +156,7 @@ class ExternalContentSource extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
-	public function canEdit() {
+	public function canEdit($member = null) {
 		return true;
 	}
 
@@ -168,7 +168,7 @@ class ExternalContentSource extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
-	public function canView() {
+	public function canView($member = null) {
 		return true;
 	}
 
@@ -198,7 +198,7 @@ class ExternalContentSource extends DataObject {
 			return DataObject::get('ExternalContentSource');
 		}
 
-		$children = new DataObjectSet();
+		$children = new ArrayList();
 		return $children;
 	}
 
@@ -209,7 +209,7 @@ class ExternalContentSource extends DataObject {
 		static $children;
 
 		if (!$children) {
-			$children = new DataObjectSet();
+			$children = new ArrayList();
 			$kids = $this->stageChildren();
 			if ($kids) {
 				foreach ($kids as $child) {
@@ -232,7 +232,7 @@ class ExternalContentSource extends DataObject {
 	 * 			A safely encoded ID
 	 */
 	public function encodeId($id) {
-		return base64_encode($id);
+		return str_replace('=', '-', base64_encode($id));
 	}
 
 	/**
@@ -244,6 +244,35 @@ class ExternalContentSource extends DataObject {
 	 * 			A decoded ID
 	 */
 	public function decodeId($id) {
+		$id = str_replace('-', '=', $id);
 		return base64_decode($id);
 	}
+
+
+	/**
+	 * Return the CSS classes to apply to this node in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeClasses() {
+		$classes = sprintf('class-%s', $this->class);
+		return $classes;
+	}
+
+
+	/**
+	 * getTreeTitle will return two <span> html DOM elements, an empty <span> with
+	 * the class 'jstree-pageicon' in front, following by a <span> wrapping around its
+	 * MenutTitle
+	 *
+	 * @return string a html string ready to be directly used in a template
+	 */
+	function getTreeTitle() {
+		$treeTitle = sprintf(
+			"<span class=\"jstree-pageicon\"></span><span class=\"item\">%s</span>",
+			Convert::raw2xml(str_replace(array("\n","\r"),"",$this->Name))
+		);
+		return $treeTitle;
+	}
+
 }

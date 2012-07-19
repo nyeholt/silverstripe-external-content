@@ -63,7 +63,7 @@ class ExternalContentItem extends DataObject {
 			$this->externalId = $id;
 			// if we are here, then we have been created in context of a parent, which also
 			// means there's a compound ID, so lets get that
-			$this->ID = $this->source->ID . '|' . $this->source->encodeId($id);
+			$this->ID = $this->source->ID . ExternalContent::ID_SEPARATOR . $this->source->encodeId($id);
 			$this->ShowInMenus = $this->source->ShowContentInMenu;
 			$this->init();
 		}
@@ -205,11 +205,11 @@ class ExternalContentItem extends DataObject {
 	 * source  instead of this node directly
 	 * 
 	 * @param boolean $showAll
-	 * @return DataObjectSet
+	 * @return ArrayList
 	 */
 	public function stageChildren($showAll = false) {
 		if ($this->Title != 'Content Root' && $this->source) {
-			$children = new DataObjectSet();
+			$children = new ArrayList();
 			$item = new ExternalContentItem($this->source, $this->Title . '1');
 			$item->Title = $this->Title . '1';
 			$item->MenuTitle = $item->Title;
@@ -226,7 +226,7 @@ class ExternalContentItem extends DataObject {
 		static $children;
 
 		if (!$children) {
-			$children = new DataObjectSet();
+			$children = new ArrayList();
 			$kids = $this->stageChildren();
 			if ($kids) {
 				foreach ($kids as $child) {
@@ -245,10 +245,9 @@ class ExternalContentItem extends DataObject {
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)
 	 */
 	public function getCMSFields() {
-		$fields = new FieldSet(
-			new TabSet("Root")
-		);
+		$fields = parent::getCMSFields();
 
+		$fields->removeByName('ParentID');
 		if (count($this->remoteProperties)) {
 			$mapping = $this->editableFieldMapping();
 			foreach ($this->remoteProperties as $name => $value) {
@@ -265,7 +264,7 @@ class ExternalContentItem extends DataObject {
 				}
 
 				if ($field) {
-					$fields->addFieldToTab('Root.Details', $field);
+					$fields->addFieldToTab('Root.Main', $field);
 				}
 			}
 		}
@@ -287,7 +286,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * Write back to the content source
 	 */
-	public function remoteWrite() {
+	public function remoteWrite($member = null) {
 		
 	}
 
@@ -300,7 +299,7 @@ class ExternalContentItem extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
-	public function canEdit() {
+	public function canEdit($member = null) {
 		return $this->source->canEdit();
 	}
 
@@ -312,7 +311,7 @@ class ExternalContentItem extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
-	public function canView() {
+	public function canView($member = null) {
 		return $this->source->canView();
 	}
 
@@ -393,7 +392,7 @@ class ExternalContentItem extends DataObject {
 	 * @param $join A join expression.  May or may not be relevant.
 	 * @param $limit A limit expression, either "(count)", or "(start), (count)"
 	 */
-	function instance_get($filter = "", $sort = "", $join = "", $limit = "", $containerClass = "DataObjectSet") {
+	function instance_get($filter = "", $sort = "", $join = "", $limit = "", $containerClass = "ArrayList") {
 		
 	}
 
@@ -434,5 +433,31 @@ class ExternalContentItem extends DataObject {
 		if (isset($mapping[$fieldName])) {
 			$this->$fieldName = $val;
 		}
+	}
+
+	/**
+	 * Return the CSS classes to apply to this node in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeClasses() {
+		$classes = sprintf('class-%s', $this->class);
+		return $classes;
+	}
+
+
+	/**
+	 * getTreeTitle will return two <span> html DOM elements, an empty <span> with
+	 * the class 'jstree-pageicon' in front, following by a <span> wrapping around its
+	 * MenutTitle
+	 *
+	 * @return string a html string ready to be directly used in a template
+	 */
+	function getTreeTitle() {
+		$treeTitle = sprintf(
+			"<span class=\"jstree-pageicon\"></span><span class=\"item\">%s</span>",
+			Convert::raw2xml(str_replace(array("\n","\r"),"",$this->Name))
+		);
+		return $treeTitle;
 	}
 }
