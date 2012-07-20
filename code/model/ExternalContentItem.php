@@ -38,11 +38,19 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * The countent source object that this item belongs to
+	 * The content source object that this item belongs to
 	 * 
 	 * @var ExternalContentSource
 	 */
 	protected $source;
+
+
+	/**
+	 * The child nodes of this item
+	 * 
+	 * @var ArrayList
+	 */
+	private $children;
 
 	/**
 	 * Create a new external content item. 
@@ -223,20 +231,18 @@ class ExternalContentItem extends DataObject {
 	 * Handle a children call by retrieving from stageChildren
 	 */
 	public function Children() {
-		static $children;
-
-		if (!$children) {
-			$children = new ArrayList();
+		if (!$this->children) {
+			$this->children = new ArrayList();
 			$kids = $this->stageChildren();
 			if ($kids) {
 				foreach ($kids as $child) {
 					if ($child->canView()) {
-						$children->push($child);
+						$this->children->push($child);
 					}
 				}
 			}
 		}
-		return $children;
+		return $this->children;
 	}
 
 	/**

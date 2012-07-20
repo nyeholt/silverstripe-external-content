@@ -42,27 +42,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 	public function init(){
 		parent::init();
-
 		Requirements::css(CMS_DIR . '/css/screen.css');
-
 		Requirements::css(EXTERNALCONTENT . '/css/external-content-admin.css');
 		Requirements::javascript(EXTERNALCONTENT . '/javascript/external-content-admin.js');
-		
-		// Requirements::combine_files(
-		// 	'cmsmain.js',
-		// 	array_merge(
-		// 		array(
-		// 			CMS_DIR . '/javascript/CMSMain.js',
-		// 			CMS_DIR . '/javascript/CMSMain.EditForm.js',
-		// 			CMS_DIR . '/javascript/CMSMain.AddForm.js',
-		// 			CMS_DIR . '/javascript/CMSPageHistoryController.js',
-		// 			CMS_DIR . '/javascript/CMSMain.Tree.js',
-		// 			CMS_DIR . '/javascript/SilverStripeNavigator.js',
-		// 			CMS_DIR . '/javascript/SiteTreeURLSegmentField.js'
-		// 		),
-		// 		Requirements::add_i18n_javascript(CMS_DIR . '/javascript/lang', true, true)
-		// 	)
-		// );
 	}
 
 
@@ -80,22 +62,6 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		parent::pageStatus();
 	}
 
-	/**
-	 * Return fake-ID "root" if no ID is found (needed for creating providers... ?)
-	 * 
-	 * Copied from AssetAdmin, not sure exactly what this is needed for
-	 */
-	// public function currentPageID() {
-	// 	if (isset($_REQUEST['ID']) && preg_match(ExternalContent::ID_FORMAT, $_REQUEST['ID'])) {
-	// 		return $_REQUEST['ID'];
-	// 	} elseif (preg_match(ExternalContent::ID_FORMAT, $this->urlParams['ID'])) {
-	// 		return $this->urlParams['ID'];
-	// 	} elseif (strlen(Session::get("{$this->class}.currentPage"))) {
-	// 		return Session::get("{$this->class}.currentPage");
-	// 	} else {
-	// 		return "root";
-	// 	}
-	// }
 
 	/**
 	 * Custom currentPage() method to handle opening the 'root' folder
@@ -111,12 +77,6 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 
-	public function LinkTreeView() {
-		return $this->Link('treeview');
-		//return $this->LinkWithSearch(singleton('CMSMain')->Link('treeview'));
-	}
-
-
 	/**
 	 * Is the passed in ID a valid
 	 * format? 
@@ -127,25 +87,20 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return preg_match(ExternalContent::ID_FORMAT, $id);
 	}
 
+
 	/**
 	 * Action to migrate a selected object through to SS
 	 * 
 	 * @param array $request
 	 */
 	public function migrate($request) {
-		$migrationTarget = isset($request['MigrationTarget']) ? $request['MigrationTarget'] : '';
-		$fileMigrationTarget = isset($request['FileMigrationTarget']) ? $request['FileMigrationTarget'] : '';
-		$includeSelected = isset($request['IncludeSelected']) ? $request['IncludeSelected'] : 0;
-		$includeChildren = isset($request['IncludeChildren']) ? $request['IncludeChildren'] : 0;
+		$migrationTarget 		= isset($request['MigrationTarget']) ? $request['MigrationTarget'] : '';
+		$fileMigrationTarget 	= isset($request['FileMigrationTarget']) ? $request['FileMigrationTarget'] : '';
+		$includeSelected 		= isset($request['IncludeSelected']) ? $request['IncludeSelected'] : 0;
+		$includeChildren 		= isset($request['IncludeChildren']) ? $request['IncludeChildren'] : 0;
+		$duplicates 			= isset($request['DuplicateMethod']) ? $request['DuplicateMethod'] : ExternalContentTransformer::DS_OVERWRITE;
+		$selected 				= isset($request['ID']) ? $request['ID'] : 0;
 
-		$duplicates = isset($request['DuplicateMethod']) ? $request['DuplicateMethod'] : ExternalContentTransformer::DS_OVERWRITE;
-
-		$selected = isset($request['ID']) ? $request['ID'] : 0;
-
-		$result = array(
-			'message' => "Invalid request",
-			'status' => false
-		);
 
 		if ($selected && ($migrationTarget || $fileMigrationTarget)) {
 			// get objects and start stuff
@@ -175,12 +130,16 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				}
 			}
 			
-			
-			$result['message'] = "Starting import to " . $target->Title;
-			$result['status'] = true;
+			Session::set("FormInfo.Form_EditForm.formError.message", _t('ExternalContent.CONTENTMIGRATED', 'Import Successful.'));
+			Session::set("FormInfo.Form_EditForm.formError.type", 'good');
+			$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.CONTENTMIGRATED', "Import Successful.")));
+			return $this->getResponseNegotiator()->respond($this->request);
+		}else{
+			Session::set("FormInfo.Form_EditForm.formError.message", _t('ExternalContent.INVALIDREQUEST', 'Invalid Request.'));
+			Session::set("FormInfo.Form_EditForm.formError.type", 'bad');
+			$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.INVALIDREQUEST', "Invalid Request.")));
+			return $this->getResponseNegotiator()->respond($this->request);	
 		}
-
-		echo Convert::raw2json($result);
 	}
 
 
@@ -217,7 +176,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		if(!$id){
 			$id = $this->currentPageID();
 		}
-		
+
 		if ($id && $id != "root") {
 			$record = ExternalContent::getDataObjectFor($id);
 		}
@@ -265,8 +224,12 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 					$fields->addFieldToTab('Root.Import', new DropdownField('Repeat', 'Repeat import each ', $repeats));
 				}
 
-				$migrateButton = '<p><input type="submit" id="Form_EditForm_Migrate" name="action_migrate" value="' . _t('ExternalContent.IMPORT', 'Start Importing') . '" /></p>';
-				$fields->addFieldToTab('Root.Import', new LiteralField('migrate', $migrateButton));
+				$migrateButton = FormAction::create('migrate', _t('ExternalContent.IMPORT', 'Start Importing'))
+					->setAttribute('data-icon', 'arrow-circle-double')
+					->setUseButtonTag(true);
+
+				//$migrateButton = '<p><button type="submit" id="Form_EditForm_Migrate" class="action" data-icon="arrow-circle-double" name="action_migrate" value="' . _t('ExternalContent.IMPORT', 'Start Importing') . '" /></p>';
+				//$fields->addFieldToTab('Root.Import', $migrateButton);
 			}
 
 			$fields->push($hf = new HiddenField("ID"));
@@ -276,14 +239,30 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			$hf->setValue(1);
 
 			$actions = new FieldList();
+
+			$actions = CompositeField::create()->setTag('fieldset')->addExtraClass('ss-ui-buttonset');
+			$actions = new FieldList($actions);
+			
 			// Only show save button if not 'assets' folder
 			if ($record->canEdit()) {
 				$actions->push(
 					FormAction::create('save',_t('ExternalContent.SAVE','Save'))
-						->addExtraClass('ss-ui-action-constructive')->setAttribute('data-icon', 'accept')
+						->addExtraClass('ss-ui-action-constructive')
+						->setAttribute('data-icon', 'accept')
+						->setUseButtonTag(true)
 				);
 			}
 
+			if($isSource && $record->canDelete()){
+				$actions->push(
+					FormAction::create('delete',_t('ExternalContent.DELETE','Delete'))
+						->addExtraClass('delete ss-ui-action-destructive')
+						->setAttribute('data-icon', 'decline')
+						->setUseButtonTag(true)
+				);
+			}
+
+			$actions->push($migrateButton);
 			
 
 			$form = new Form($this, "EditForm", $fields, $actions);
@@ -315,14 +294,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 
-	public function SiteTreeAsUL() {
-		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children');
-		$this->extend('updateSiteTreeAsUL', $html);
-		return $html;
-	}
-
-
-	/**
+		/**
 	 * Get the form used to create a new provider
 	 * 
 	 * @return Form
@@ -348,9 +320,12 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				->setUseButtonTag(true)
 		);
 
+		$form = new Form($this, "AddForm", $fields, $actions);
 
+		$form->addExtraClass('cms-edit-form ' . $this->BaseCSSClasses());
+		$this->extend('updateEditForm', $form);
 
-		return new Form($this, "AddForm", $fields, $actions);
+		return $form; 
 	}
 
 	/**
@@ -391,8 +366,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			return $this->getResponseNegotiator()->respond($this->request);
 		}
 
-		$editController = singleton('CMSPageEditController');
-		$editController->setCurrentPageID($record->ID);
+		singleton('CMSPageEditController')->setCurrentPageID($record->ID);
 
 		Session::set(
 			"FormInfo.Form_EditForm.formError.message", 
@@ -400,12 +374,11 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		);
 		Session::set("FormInfo.Form_EditForm.formError.type", 'good');
 
-		$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'Saved.')));
+		$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.PROVIDERADDED', "New $type created.")));
 		return $this->getResponseNegotiator()->respond($this->request);
-		
-		return $this->redirect(Controller::join_links($this->Link('show'), $record->ID));
-
 	}
+
+
 
 	/**
 	 * Copied from AssetAdmin... 
@@ -470,6 +443,18 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return 'Connectors';
 	}
 
+
+	public function SiteTreeAsUL() {
+		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children');
+		$this->extend('updateSiteTreeAsUL', $html);
+		return $html;
+	}
+
+
+	public function LinkTreeView() {
+		return $this->Link('treeview');
+	}
+
 	
 	/**
 	 * @return String HTML
@@ -477,8 +462,6 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	public function treeview($request) {
 		return $this->renderWith($this->getTemplatesWithSuffix('_TreeView'));
 	}
-
-
 
 }
 
