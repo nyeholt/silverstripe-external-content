@@ -43,6 +43,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	public function init(){
 		parent::init();
 		Requirements::css(CMS_DIR . '/css/screen.css');
+		Requirements::customCSS($this->generatePageIconsCss());
 		Requirements::css(EXTERNALCONTENT . '/css/external-content-admin.css');
 		Requirements::javascript(EXTERNALCONTENT . '/javascript/external-content-admin.js');
 	}
@@ -101,6 +102,15 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$duplicates 			= isset($request['DuplicateMethod']) ? $request['DuplicateMethod'] : ExternalContentTransformer::DS_OVERWRITE;
 		$selected 				= isset($request['ID']) ? $request['ID'] : 0;
 
+		if(!$selected){
+			$messageType = 'bad';
+			$message = _t('ExternalContent.NOITEMSELECTED', 'No item selected to import.');
+		}
+
+		if(!$migrationTarget || !$fileMigrationTarget){
+			$messageType = 'bad';
+			$message = _t('ExternalContent.NOTARGETSELECTED', 'No target to import to selected.');
+		}
 
 		if ($selected && ($migrationTarget || $fileMigrationTarget)) {
 			// get objects and start stuff
@@ -129,17 +139,15 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 					$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates, $request);
 				}
 			}
-			
-			Session::set("FormInfo.Form_EditForm.formError.message", _t('ExternalContent.CONTENTMIGRATED', 'Import Successful.'));
-			Session::set("FormInfo.Form_EditForm.formError.type", 'good');
-			$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.CONTENTMIGRATED', "Import Successful.")));
-			return $this->getResponseNegotiator()->respond($this->request);
-		}else{
-			Session::set("FormInfo.Form_EditForm.formError.message", _t('ExternalContent.INVALIDREQUEST', 'Invalid Request.'));
-			Session::set("FormInfo.Form_EditForm.formError.type", 'bad');
-			$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.INVALIDREQUEST', "Invalid Request.")));
-			return $this->getResponseNegotiator()->respond($this->request);	
+
+			$messageType = 'good';
+			$message = _t('ExternalContent.CONTENTMIGRATED', 'Import Successful.');
 		}
+
+		Session::set("FormInfo.Form_EditForm.formError.message",$message);
+		Session::set("FormInfo.Form_EditForm.formError.type", $messageType);
+
+		return $this->getResponseNegotiator()->respond($this->request);	
 	}
 
 
@@ -198,7 +206,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				if (isset($allowedTypes['file'])) {
 					$fields->addFieldToTab('Root.Import', new TreeDropdownField("FileMigrationTarget", _t('ExternalContent.FILE_MIGRATE_TARGET', 'Folder to import into'), 'Folder'));
 				}
-
+										
 				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeSelected", _t('ExternalContent.INCLUDE_SELECTED', 'Include Selected Item in Import')));
 				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeChildren", _t('ExternalContent.INCLUDE_CHILDREN', 'Include Child Items in Import'), true));
 
@@ -228,8 +236,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 					->setAttribute('data-icon', 'arrow-circle-double')
 					->setUseButtonTag(true);
 
-				//$migrateButton = '<p><button type="submit" id="Form_EditForm_Migrate" class="action" data-icon="arrow-circle-double" name="action_migrate" value="' . _t('ExternalContent.IMPORT', 'Start Importing') . '" /></p>';
-				//$fields->addFieldToTab('Root.Import', $migrateButton);
+				$fields->addFieldToTab('Root.Import', new LiteralField('MigrateActions', "<div class='Actions'>{$migrateButton->forTemplate()}</div>"));
 			}
 
 			$fields->push($hf = new HiddenField("ID"));
@@ -262,7 +269,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				);
 			}
 
-			$actions->push($migrateButton);
+			
 			
 
 			$form = new Form($this, "EditForm", $fields, $actions);
@@ -461,6 +468,54 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	 */
 	public function treeview($request) {
 		return $this->renderWith($this->getTemplatesWithSuffix('_TreeView'));
+	}
+
+
+ 	/**
+	 * Include CSS for page icons. We're not using the JSTree 'types' option
+	 * because it causes too much performance overhead just to add some icons.
+	 * 
+	 * @return String CSS 
+	 */
+	public function generatePageIconsCss() {
+		$css = ''; 
+		
+		$sourceClasses 	= ClassInfo::subclassesFor('ExternalContentSource');
+		$itemClasses 	= ClassInfo::subclassesFor('ExternalContentItem');
+		$classes 		= array_merge($sourceClasses, $itemClasses);
+		
+		foreach($classes as $class) {
+			$obj = singleton($class); 
+			$iconSpec = $obj->stat('icon'); 
+
+			if(!$iconSpec) continue;
+
+			// Legacy support: We no longer need separate icon definitions for folders etc.
+			$iconFile = (is_array($iconSpec)) ? $iconSpec[0] : $iconSpec;
+
+			// Legacy support: Add file extension if none exists
+			if(!pathinfo($iconFile, PATHINFO_EXTENSION)) $iconFile .= '-file.gif';
+
+			$iconPathInfo = pathinfo($iconFile); 
+			
+			// Base filename 
+			$baseFilename = $iconPathInfo['dirname'] . '/' . $iconPathInfo['filename'];
+			$fileExtension = $iconPathInfo['extension'];
+
+			$selector = ".page-icon.class-$class, li.class-$class > a .jstree-pageicon";
+
+			if(Director::fileExists($iconFile)) {
+				$css .= "$selector { background: transparent url('$iconFile') 0 0 no-repeat; }\n";
+			} else {
+				// Support for more sophisticated rules, e.g. sprited icons
+				$css .= "$selector { $iconFile }\n";
+			}
+			
+		}
+
+		$css .= "li.type-file > a .jstree-pageicon { background: transparent url('framework/admin/images/sitetree_ss_pageclass_icons_default.png') 0 0 no-repeat; }\n}";
+
+		return $css;
 	}
 
 }

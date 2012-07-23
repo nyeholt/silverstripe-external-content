@@ -24,6 +24,14 @@ class ExternalContentItem extends DataObject {
 	static $extensions = array(
 		"Hierarchy",
 	);
+
+
+	/**
+	 * @var string - icon for cms tree
+	 **/
+	public static $icon = null;
+
+
 	protected $ownerId;
 
 	/**
@@ -449,6 +457,16 @@ class ExternalContentItem extends DataObject {
 	function CMSTreeClasses() {
 		$classes = sprintf('class-%s', $this->class);
 		return $classes;
+	}
+
+
+	/**
+	 * Return the CSS declarations to apply to nodes of this type in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeCSS() {
+		return null;
 	}
 
 

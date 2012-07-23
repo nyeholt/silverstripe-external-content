@@ -28,6 +28,13 @@ class ExternalContentSource extends DataObject {
 		"Hierarchy",
 	);
 
+
+	/**
+	 * @var string - icon for cms tree
+	 **/
+	public static $icon = 'cms/images/treeicons/root.png';
+
+
 	/**
 	 * Get the object represented by an external ID
 	 * 
@@ -257,6 +264,16 @@ class ExternalContentSource extends DataObject {
 	function CMSTreeClasses() {
 		$classes = sprintf('class-%s', $this->class);
 		return $classes;
+	}
+
+
+	/**
+	 * Return the CSS declarations to apply to nodes of this type in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeCSS() {
+		return null;
 	}
 
 

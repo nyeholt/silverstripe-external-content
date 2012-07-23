@@ -4,8 +4,6 @@
 (function($) {
 
 	$.entwine('ss', function($){
-		
-		//console.log($('.cms-tree').find("[data-id='1|L2JlbmV0']").length);
 
 		/**
 		 * Name
@@ -16,7 +14,7 @@
 			},
 
 			/**
-			 * Function: updatePanelLabels
+			 * Function: updateTreeLabel
 			 * 
 			 * Update the tree
 			 * (String) title
