@@ -36,6 +36,12 @@ class ExternalContentSource extends DataObject {
 
 
 	/**
+	 * @var ArrayList - children
+	 **/
+	private $children;
+
+
+	/**
 	 * Get the object represented by an external ID
 	 * 
 	 * All external content sources must override this
@@ -213,20 +219,18 @@ class ExternalContentSource extends DataObject {
 	 * Handle a children call by retrieving from stageChildren
 	 */
 	public function Children() {
-		static $children;
-
-		if (!$children) {
-			$children = new ArrayList();
+		if (!$this->children) {
+			$this->children = new ArrayList();
 			$kids = $this->stageChildren();
 			if ($kids) {
 				foreach ($kids as $child) {
 					if ($child->canView()) {
-						$children->push($child);
+						$this->children->push($child);
 					}
 				}
 			}
 		}
-		return $children;
+		return $this->children;
 	}
 
 	/**
