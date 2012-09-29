@@ -1,5 +1,6 @@
 <?php
 
+/*
 class ExternalContentModelAdmin extends ModelAdmin {
 
 
@@ -8,3 +9,5 @@ class ExternalContentModelAdmin extends ModelAdmin {
 	public static $managed_models = 'FileSystemContentSource';
 	
 }
+
+*/
