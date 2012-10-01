@@ -12,7 +12,7 @@ class ExternalContentHtmlEditorExtension extends Extension {
 		Requirements::javascript(EXTERNALCONTENT . "/javascript/external_tiny_mce_improvements.js");
 		
 		$fields = $form->Fields();
-		$fields->replaceField('LinkType', new OptionsetField(
+		$fields->replaceField('LinkType', $options = new OptionsetField(
 					'LinkType',
 					_t('HtmlEditorField.LINKTO', 'Link to'), 
 					array(
@@ -25,7 +25,7 @@ class ExternalContentHtmlEditorExtension extends Extension {
 					)
 				));
 		$fields->insertAfter(
-			new ExternalTreeDropdownField(
+			$tree = new ExternalTreeDropdownField(
 				'externalcontent', 
 				_t('ExternalHtmlEditorField.EXTERNAL_CONTENT', 'External Content'),
 				'ExternalContentSource', 
@@ -33,5 +33,9 @@ class ExternalContentHtmlEditorExtension extends Extension {
 			), 
 			'file'
 		);
+
+		// Explicitly set the form on new fields so the hierarchy can be traversed.
+		$tree->setForm($form);
+		$options->setForm($form);
 	}
 }
