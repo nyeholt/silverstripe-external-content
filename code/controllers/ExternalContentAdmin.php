@@ -150,6 +150,23 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return $this->getResponseNegotiator()->respond($this->request);	
 	}
 
+	/**
+	 * Return the record corresponding to the given ID.
+	 * 
+	 * Both the numeric IDs of ExternalContentSource records and the composite IDs of ExternalContentItem entries
+	 * are supported.
+	 * 
+	 * @param  string $id The ID
+	 * @return Dataobject The relevant object
+	 */
+	public function getRecord($id) {
+		if(is_numeric($id)) {
+			return parent::getRecord($id);
+		} else {
+			return ExternalContent::getDataObjectFor($id);
+		}
+	}
+
 
 		/**
 	 * Return the edit form
@@ -186,7 +203,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		}
 
 		if ($id && $id != "root") {
-			$record = ExternalContent::getDataObjectFor($id);
+			$record = $this->getRecord($id);
 		}
 
 		if ($record) {
@@ -450,14 +467,6 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return 'Connectors';
 	}
 
-
-	public function SiteTreeAsUL() {
-		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children');
-		$this->extend('updateSiteTreeAsUL', $html);
-		return $html;
-	}
-
-
 	public function LinkTreeView() {
 		return $this->Link('treeview');
 	}
@@ -468,6 +477,33 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	 */
 	public function treeview($request) {
 		return $this->renderWith($this->getTemplatesWithSuffix('_TreeView'));
+	}
+
+	public function SiteTreeAsUL() {
+		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children', 'NumChildren');
+		$this->extend('updateSiteTreeAsUL', $html);
+		return $html;
+	}
+
+	/**
+	 * Get a subtree underneath the request param 'ID'.
+	 * If ID = 0, then get the whole tree.
+	 */
+	public function getsubtree($request) {
+		$html = $this->getSiteTreeFor(
+			'ExternalContentItem', 
+			$request->getVar('ID'), 
+			'Children', 
+			'NumChildren',
+			null, 
+			$request->getVar('minNodeCount')
+		);
+
+		// Trim off the outer tag
+		$html = preg_replace('/^[\s\t\r\n]*<ul[^>]*>/','', $html);
+		$html = preg_replace('/<\/ul[^>]*>[\s\t\r\n]*$/','', $html);
+		
+		return $html;
 	}
 
 

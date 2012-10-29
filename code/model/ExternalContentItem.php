@@ -456,6 +456,8 @@ class ExternalContentItem extends DataObject {
 	 */
 	function CMSTreeClasses() {
 		$classes = sprintf('class-%s', $this->class);
+		// Ensure that classes relating to whether there are further nodes to download are included
+		$classes .= $this->markingClasses();
 		return $classes;
 	}
 
