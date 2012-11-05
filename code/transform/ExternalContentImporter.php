@@ -50,7 +50,7 @@ abstract class ExternalContentImporter extends Object {
 		$children = null;
 		if ($includeParent) {
 			// Get the children of a particular node
-			$children = new DataObjectSet();
+			$children = new ArrayList();
 			$children->push($contentItem);
 		} else {
 			$children = $contentItem->stageChildren();

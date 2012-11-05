@@ -28,6 +28,19 @@ class ExternalContentSource extends DataObject {
 		"Hierarchy",
 	);
 
+
+	/**
+	 * @var string - icon for cms tree
+	 **/
+	public static $icon = 'cms/images/treeicons/root.png';
+
+
+	/**
+	 * @var ArrayList - children
+	 **/
+	private $children;
+
+
 	/**
 	 * Get the object represented by an external ID
 	 * 
@@ -143,7 +156,7 @@ class ExternalContentSource extends DataObject {
 	 *
 	 * @return bool
 	 */
-	public function canCreate() {
+	public function canCreate($member = null) {
 		return true;
 	}
 
@@ -156,7 +169,7 @@ class ExternalContentSource extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
-	public function canEdit() {
+	public function canEdit($member = null) {
 		return true;
 	}
 
@@ -168,7 +181,7 @@ class ExternalContentSource extends DataObject {
 	 * 
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
-	public function canView() {
+	public function canView($member = null) {
 		return true;
 	}
 
@@ -198,7 +211,7 @@ class ExternalContentSource extends DataObject {
 			return DataObject::get('ExternalContentSource');
 		}
 
-		$children = new DataObjectSet();
+		$children = new ArrayList();
 		return $children;
 	}
 
@@ -206,20 +219,18 @@ class ExternalContentSource extends DataObject {
 	 * Handle a children call by retrieving from stageChildren
 	 */
 	public function Children() {
-		static $children;
-
-		if (!$children) {
-			$children = new DataObjectSet();
+		if (!$this->children) {
+			$this->children = new ArrayList();
 			$kids = $this->stageChildren();
 			if ($kids) {
 				foreach ($kids as $child) {
 					if ($child->canView()) {
-						$children->push($child);
+						$this->children->push($child);
 					}
 				}
 			}
 		}
-		return $children;
+		return $this->children;
 	}
 
 	/**
@@ -232,7 +243,7 @@ class ExternalContentSource extends DataObject {
 	 * 			A safely encoded ID
 	 */
 	public function encodeId($id) {
-		return base64_encode($id);
+		return str_replace('=', '-', base64_encode($id));
 	}
 
 	/**
@@ -244,6 +255,47 @@ class ExternalContentSource extends DataObject {
 	 * 			A decoded ID
 	 */
 	public function decodeId($id) {
+		$id = str_replace('-', '=', $id);
 		return base64_decode($id);
 	}
+
+
+	/**
+	 * Return the CSS classes to apply to this node in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeClasses() {
+		$classes = sprintf('class-%s', $this->class);
+		// Ensure that classes relating to whether there are further nodes to download are included
+		$classes .= $this->markingClasses();
+		return $classes;
+	}
+
+
+	/**
+	 * Return the CSS declarations to apply to nodes of this type in the CMS tree
+	 *
+	 * @return string
+	 */
+	function CMSTreeCSS() {
+		return null;
+	}
+
+
+	/**
+	 * getTreeTitle will return two <span> html DOM elements, an empty <span> with
+	 * the class 'jstree-pageicon' in front, following by a <span> wrapping around its
+	 * MenutTitle
+	 *
+	 * @return string a html string ready to be directly used in a template
+	 */
+	function getTreeTitle() {
+		$treeTitle = sprintf(
+			"<span class=\"jstree-pageicon\"></span><span class=\"item\">%s</span>",
+			Convert::raw2xml(str_replace(array("\n","\r"),"",$this->Name))
+		);
+		return $treeTitle;
+	}
+
 }

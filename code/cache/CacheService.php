@@ -40,7 +40,7 @@ class CacheService {
 	 * Get the instance
 	 * @return CacheService
 	 */
-	public function inst() {
+	public static function inst() {
 		if (!self::$instance) {
 			self::$instance = new CacheService();
 		}
