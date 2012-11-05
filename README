@@ -10,7 +10,10 @@ Marcus Nyeholt
 
 Requirements
 -----------------------------------------------
-SilverStripe 2.4.x
+
+Note: For a SilverStripe 2.4 compatible module, please check the 1.0.0 branch
+
+SilverStripe 3.0.3
 FileSystem Connector module (for a default connector implementation)
 PHP MB String module (should be default on most systems)
 
