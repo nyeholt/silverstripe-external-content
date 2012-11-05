@@ -1,0 +1,13 @@
+{
+	"name": "silverstripe/external-content",
+	"description": "A flexible framework for connecting other content sources to a SilverStripe site.",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "external-content", "integration", "api"],
+	"authors": [{
+		"name": "Marcus Nyeholt",
+		"email": "marcus@silverstripe.com.au"
+	}],
+	"require": {
+		"silverstripe/framework": "3.*"
+	}
+}
