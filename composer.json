@@ -1,0 +1,14 @@
+{
+	"name": "silverstripe/external-content",
+	"description": "A flexible framework for connecting other content sources to a SilverStripe site.",
+	"license": "BSD-3-Clause",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "external-content", "integration", "api"],
+	"authors": [{
+		"name": "Marcus Nyeholt",
+		"email": "marcus@silverstripe.com.au"
+	}],
+	"require": {
+		"silverstripe/framework": ">=2.4.0,<3.0.0"
+	}
+}
