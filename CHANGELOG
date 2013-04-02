@@ -1,3 +1,8 @@
+2013-04-02 v2.0.0
+-----------------
+
+* Fixed issue with getTreeTitle not working if Name property doesn't exist
+* Removed Save button for now as it doesn't work
 
 2012-11-05 v2.0.0
 -----------------

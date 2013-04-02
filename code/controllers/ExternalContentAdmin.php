@@ -269,12 +269,12 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			
 			// Only show save button if not 'assets' folder
 			if ($record->canEdit()) {
-				$actions->push(
-					FormAction::create('save',_t('ExternalContent.SAVE','Save'))
-						->addExtraClass('ss-ui-action-constructive')
-						->setAttribute('data-icon', 'accept')
-						->setUseButtonTag(true)
-				);
+//				$actions->push(
+//					FormAction::create('save',_t('ExternalContent.SAVE','Save'))
+//						->addExtraClass('ss-ui-action-constructive')
+//						->setAttribute('data-icon', 'accept')
+//						->setUseButtonTag(true)
+//				);
 			}
 
 			if($isSource && $record->canDelete()){

@@ -154,14 +154,6 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * Get the title to use in a tree
-	 * @return String
-	 */
-	function TreeTitle() {
-		return $this->Name;
-	}
-
-	/**
 	 * Where this can be downloaded from
 	 * 
 	 * @return string
@@ -480,9 +472,14 @@ class ExternalContentItem extends DataObject {
 	 * @return string a html string ready to be directly used in a template
 	 */
 	function getTreeTitle() {
+		$title = $this->Title;
+		if (!$title) {
+			$title = $this->Name;
+		}
+		
 		$treeTitle = sprintf(
 			"<span class=\"jstree-pageicon\"></span><span class=\"item\">%s</span>",
-			Convert::raw2xml(str_replace(array("\n","\r"),"",$this->Name))
+			Convert::raw2xml(str_replace(array("\n","\r"),"", $title))
 		);
 		return $treeTitle;
 	}
