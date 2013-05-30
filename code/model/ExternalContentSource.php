@@ -243,7 +243,10 @@ class ExternalContentSource extends DataObject {
 	 * 			A safely encoded ID
 	 */
 	public function encodeId($id) {
-		return str_replace('=', '-', base64_encode($id));
+		return str_replace(
+			array('=', '/', '+'),
+			array('-', '~' ,','),
+			base64_encode($id));
 	}
 
 	/**
@@ -255,7 +258,10 @@ class ExternalContentSource extends DataObject {
 	 * 			A decoded ID
 	 */
 	public function decodeId($id) {
-		$id = str_replace('-', '=', $id);
+		$id= str_replace(
+			array('-', '~' ,','),
+			array('=', '/', '+'),
+			$id);
 		return base64_decode($id);
 	}
 
