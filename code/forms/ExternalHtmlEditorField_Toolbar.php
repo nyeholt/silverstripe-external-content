@@ -25,7 +25,7 @@ class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 	 */
 	function LinkForm() {
 		Requirements::javascript(THIRDPARTY_DIR . "/behaviour.js");
-		Requirements::javascript(EXTERNALCONTENT . "/javascript/external_tiny_mce_improvements.js");
+		Requirements::javascript(ExternalContentAdmin::$directory . "/javascript/external_tiny_mce_improvements.js");
 
 		$form = new Form(
 			$this->controller,

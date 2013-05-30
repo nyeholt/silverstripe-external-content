@@ -1,8 +1,5 @@
 <?php
 
-define('EXTERNALCONTENT', 'external-content');
-
-
 /**
  * Backend administration pages for the external content module
  * 
@@ -17,11 +14,16 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	const URL_STUB = 'extadmin';
 
 	/**
+	 * The directory that the module is assuming it's installed in to.
+	 */
+	static $directory = 'external-content';
+
+	/**
 	 * URL segment used by the backend 
 	 * 
 	 * @var string
 	 */
-	static $url_segment = EXTERNALCONTENT;
+	static $url_segment = 'external-content';
 	static $url_rule = '$Action//$ID';
 	static $menu_title = 'External Content';
 	public static $tree_class = 'ExternalContentSource';
@@ -36,7 +38,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		'migrate',
 		'download',
 		'view',
-		'treeview'
+		'treeview',
+		'EditForm',
+		'AddForm'
 	);
 
 
@@ -44,8 +48,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		parent::init();
 		Requirements::css(CMS_DIR . '/css/screen.css');
 		Requirements::customCSS($this->generatePageIconsCss());
-		Requirements::css(EXTERNALCONTENT . '/css/external-content-admin.css');
-		Requirements::javascript(EXTERNALCONTENT . '/javascript/external-content-admin.js');
+		Requirements::css(self::$directory . '/css/external-content-admin.css');
+		Requirements::javascript(self::$directory . '/javascript/external-content-admin.js');
 	}
 
 
