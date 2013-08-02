@@ -13,6 +13,7 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 	public function __construct($contentItem = null, $target = null, $includeParent = false, $includeChildren = true, $duplicateStrategy='overwrite', $params = array()
 	) {
 		if ($contentItem) {
+			$this->imported = array();
 			$this->sourceObjectID = $contentItem->ID;
 			$this->targetObjectID = $target->ID;
 			$this->targetObjectType = $target->ClassName;
@@ -91,6 +92,7 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 	 */
 	public function setup() {
 		$remainingChildren = array();
+		
 		if ($this->includeParent) {
 			$remainingChildren[] = new EC_SourceTarget($this->sourceObjectID, $this->targetObjectID, $this->targetObjectType);
 		} else {
@@ -114,6 +116,7 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 	 */
 	public function process() {
 		$remainingChildren = $this->remainingChildren;
+		$imported = $this->imported;
 
 		if (!count($remainingChildren)) {
 			$this->isComplete = true;
@@ -145,6 +148,10 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 
 			$result = $transformer->transform($sourceObject, $targetObject, $this->duplicateStrategy);
 
+			if ($result->page && $result->page->ID) {
+				$imported[$sourceObject->SS_ID] = get_class($result->page) . '|' . $result->page->ID;
+			}
+			
 			// if there's more, then transform them
 			if ($this->includeChildren && $result && $result->children && count($result->children)) {
 				foreach ($result->children as $child) {
@@ -155,11 +162,30 @@ abstract class QueuedExternalContentImporter extends AbstractQueuedJob {
 		}
 
 		$this->remainingChildren = $remainingChildren;
+		$this->imported = $imported;
 
 		if (!count($remainingChildren)) {
 			$this->isComplete = true;
 			return;
 		}
+	}
+	
+	public function afterComplete() {
+		$imported = $this->imported;
+		foreach ($imported as $sourceId => $newId) {
+			$bits = explode('|', $newId);
+			$page = DataObject::get_by_id($bits[0], $bits[1]);
+			$this->afterImport($page);
+		}
+	}
+	
+	/**
+	 * Called after an import has completed
+	 * 
+	 * @param DataObject $newObject
+	 */
+	protected function afterImport($newObject) {
+		
 	}
 
 	/**
