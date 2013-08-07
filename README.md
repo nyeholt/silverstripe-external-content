@@ -1,57 +1,36 @@
-###############################################
-External Content Module
-###############################################
+# External Content Module
 
-Maintainer Contact
------------------------------------------------
+
+## Maintainer Contact
+
 Marcus Nyeholt
 
 <marcus (at) silverstripe (dot) com (dot) au>
 
-Requirements
------------------------------------------------
+
+## Requirements
+
+ * SilverStripe 3
+ * FileSystem Connector module (for a default connector implementation)
+ * PHP MB String module (should be default on most systems)
 
 Note: For a SilverStripe 2.4 compatible module, please check the 1.0.0 branch
 
-SilverStripe 3.0.3
-FileSystem Connector module (for a default connector implementation)
-PHP MB String module (should be default on most systems)
+## Usage
 
-Documentation
------------------------------------------------
+This article assumes that you have installed the [FileSystem Connector module](https://github.com/nyeholt/silverstripe-filesystem-connector), which provides access to content from a filesystem path. 
 
-The external content module provides a method for making content from 
-external sources available and usable within SilverStripe
+### Connecting to the content source
 
-See http://doc.silverstripe.org/doku.php?id=module:external-content for an 
-overview of the functionality provided by this module
-
-See http://doc.silverstripe.org/doku.php?id=module:external-content-quickstart 
-for a quick start guide to working with the filesystem-connector module
-
-See http://doc.silverstripe.org/doku.php?id=module:external-content-newconnector
-for writing a new custom connector
-
-
-
-Quick Usage Overview
------------------------------------------------
-
-As copied from http://doc.silverstripe.org/doku.php?id=module:external-content-quickstart
-
-This article assumes that you have installed the "FileSystem Connector" module (http://public.silverstripe.com.au/open/modules/filesystem-connector/), which provides access to content from a filesystem path. 
-
-==== Connecting to the content source ====
   * Extract the module to your silverstripe root directory in a directory called "external-content" 
   * Browse to http://localhost/external-content/admin and login
-  * Create a new FileSystemContentSource from the tree on the left menu. Set the 
-following field values:
-  ** name - File System Content
-  ** Folder Path - The folder to retrieve content from (in the form /path/to/content)
+  * Create a new FileSystemContentSource from the tree on the left menu. Set the following field values:
+   * name - File System Content
+   * Folder Path - The folder to retrieve content from (in the form /path/to/content)
   * Once saved, you will need to reload the External Content page for content to 
 start coming through the connector
 
-==== Accessing content on the frontend ====
+### Accessing content on the frontend
 
   * Navigate to the "Site Content" tab
   * Create a new 'External Content Page' in your site tree
@@ -59,7 +38,7 @@ start coming through the connector
   * Save and view the page on the frontend; its url should look something like http://localhost/extcon/view?ID=1 or similar
   * You can also link to external content directly in the WYSIWYG content areas by selecting "External Content" as the "Link To" option when the Insert Link toolbar is displayed
 
-==== Importing content ==== 
+### Importing content 
 
   * First, make sure you have an empty folder called "Incoming" created in the "Files & Images" section
   * Navigate back to the External Content section, and expand the "File System Content" node created earlier. 
@@ -69,13 +48,7 @@ start coming through the connector
   * Navigate to the "Files and Images" section and click the "Incoming" folder. 
   * The uploaded files should appear in the right hand listing when you select the imported folder
 
-API
------------------------------------------------
-
-For information on the various parts of the API needed for writing connectors, 
-please see the new connector tutorial at 
-
-http://doc.silverstripe.org/doku.php?id=module:external-content-newconnector
+## API
 
 WebApiClient
 
@@ -101,8 +74,7 @@ and getting a SimpleXML object as the return type. This mechanism is used by
 the AlfrescoSeaMistRepository, so refer to that module for further details. 
 
 
-Troubleshooting
------------------------------------------------
+## Troubleshooting
 
 If you're having trouble viewing pages when opening an ExternalContentPage
 directly via the backend, make sure there's not two ? characters in the URL. The
