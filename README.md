@@ -1,5 +1,6 @@
 # External Content Module
 
+The External Content module forms a framework for displaying and migrating content from external sources.
 
 ## Maintainer Contact
 
