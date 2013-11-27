@@ -262,15 +262,27 @@ class ExternalContentItem extends DataObject {
 					$field = $mapping[$name];
 					if (is_string($field)) {
 						$field = new $field($name, $this->fieldLabel($name), $value);
+						$fields->addFieldToTab('Root.Main', $field);
 					}
-				} else {
+				} else if(!is_object($value)){
 					$value = (string) $value;
 					$field = new ReadonlyField($name, _t('ExternalContentItem.' . $name, $name), $value);
-					
-				}
-
-				if ($field) {
 					$fields->addFieldToTab('Root.Main', $field);
+				} else if(is_object($value)){
+					foreach($value as $childName => $childValue) {
+						if(is_object($childValue)) {
+							foreach($childValue as $childChildName => $childChildValue) {
+								$childChildValue = (string) $childChildValue;
+								$field = new ReadonlyField("{$childName}{$childChildName}", "{$childName}: {$childChildName}", $childChildValue);
+								$fields->addFieldToTab('Root.Main', $field);
+							}
+						}
+						else {
+							$childValue = (string) $childValue;
+							$field = new ReadonlyField($childName, $childName, $childValue);
+							$fields->addFieldToTab('Root.Main', $field);
+						}
+					}
 				}
 			}
 		}
