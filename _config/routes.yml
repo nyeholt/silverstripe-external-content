@@ -1,0 +1,8 @@
+---
+Name: external-content-routes
+After: '#modelascontrollerroutes'
+---
+Director:
+  rules:
+    'extadmin': 'ExternalContentAdmin'
+    'extcon': 'ExternalContentPage_Controller'

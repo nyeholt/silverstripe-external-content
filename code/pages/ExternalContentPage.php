@@ -11,10 +11,10 @@
  */
 class ExternalContentPage extends Page {
 
-	public static $db = array(
+	private static $db = array(
 		'ExternalContentRoot' => 'Varchar(128)',
 	);
-	public static $has_one = array(
+	private static $has_one = array(
 			// 'ExternalContent' => 'ExternalContentSource'
 	);
 
@@ -102,7 +102,7 @@ class ExternalContentPage extends Page {
 class ExternalContentPage_Controller extends Page_Controller {
 	const URL_STUB = 'extcon';
 
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'view',
 		'download',
 	);

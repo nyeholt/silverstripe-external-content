@@ -23,11 +23,11 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	 * 
 	 * @var string
 	 */
-	static $url_segment = 'external-content';
-	static $url_rule = '$Action//$ID';
-	static $menu_title = 'External Content';
-	public static $tree_class = 'ExternalContentSource';
-	static $allowed_actions = array(
+	private static $url_segment = 'external-content';
+	private static $url_rule = '$Action//$ID';
+	private static $menu_title = 'External Content';
+	private static $tree_class = 'ExternalContentSource';
+	private static $allowed_actions = array(
 		'addprovider',
 		'deleteprovider',
 		'deletemarked',
@@ -42,7 +42,6 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		'EditForm',
 		'AddForm'
 	);
-
 
 	public function init(){
 		parent::init();

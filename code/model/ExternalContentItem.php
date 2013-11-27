@@ -19,9 +19,9 @@
  */
 class ExternalContentItem extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 	);
-	static $extensions = array(
+	private static $extensions = array(
 		"Hierarchy",
 	);
 
@@ -29,7 +29,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * @var string - icon for cms tree
 	 **/
-	public static $icon = null;
+	private static $icon = null;
 
 
 	protected $ownerId;
