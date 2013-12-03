@@ -557,6 +557,44 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return $css;
 	}
 
+	/**
+	 * Save the content source/item
+	 *
+	 * @param array $urlParams
+	 * @param Form $form
+	 */
+	public function save($urlParams, $form) {
+
+		// Retrieve the record.
+
+		$record = null;
+		if (isset($urlParams['ID'])) {
+			$record = ExternalContent::getDataObjectFor($urlParams['ID']);
+		}
+		if (!$record) {
+			return parent::save($urlParams, $form);
+		}
+
+		if ($record->canEdit()) {
+			// lets load the params that have been sent and set those that have an editable mapping
+			if ($record->hasMethod('editableFieldMapping')) {
+				$editable = $record->editableFieldMapping();
+				$form->saveInto($record, array_keys($editable));
+				$record->remoteWrite();
+			} else {
+				$form->saveInto($record);
+				$record->write();
+			}
+
+			// Set the form response.
+
+			$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'Saved.')));
+		} else {
+			$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'You don\'t have write access.')));
+		}
+		return $this->getResponseNegotiator()->respond($this->request);
+	}
+
 }
 
 ?>
