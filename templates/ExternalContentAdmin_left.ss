@@ -15,13 +15,13 @@
 		<input class="action" type="submit" value="<% _t('GO','Go') %>" />
 		</div>
 	</form>-->
-	<% control CreateProviderForm %>
+	<% loop CreateProviderForm %>
 		<form class="actionparams" id="$FormName" action="$FormAction">
-			<% control Fields %>
+			<% loop Fields %>
 			$FieldHolder
-			<% end_control %>
+			<% end_loop %>
 		</form>
-	<% end_control %>
+	<% end_loop %>
 
 	$DeleteItemsForm
 	<form class="actionparams" id="sortitems_options" style="display: none">

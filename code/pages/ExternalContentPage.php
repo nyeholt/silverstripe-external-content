@@ -84,11 +84,11 @@ class ExternalContentPage extends Page {
 	/**
 	 * Return the children of this external content item as my children
 	 *
-	 * @return DataObjectSet
+	 * @return ArrayList
 	 */
 	public function Children() {
 		$item = $this->ContentItem();
-		return $item ? $item->stageChildren() : new DataList();
+		return $item ? $item->stageChildren() : new ArrayList();
 	}
 
 }
