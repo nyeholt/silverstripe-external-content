@@ -150,7 +150,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		Session::set("FormInfo.Form_EditForm.formError.message",$message);
 		Session::set("FormInfo.Form_EditForm.formError.type", $messageType);
 
-		return $this->getResponseNegotiator()->respond($this->request);	
+		// return $this->getResponseNegotiator()->respond($this->request);
+		echo '<script>window.location.reload();</script>';
+		return;
 	}
 
 	/**
