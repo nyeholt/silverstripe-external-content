@@ -400,9 +400,12 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			sprintf(_t('ExternalContent.SourceAdded', 'Successfully created %s'), $type)
 		);
 		Session::set("FormInfo.Form_EditForm.formError.type", 'good');
-
+		/*
 		$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.PROVIDERADDED', "New $type created.")));
 		return $this->getResponseNegotiator()->respond($this->request);
+		*/
+		echo '<script>window.location.reload();</script>';
+		return;
 	}
 
 
@@ -558,10 +561,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 	/**
-	 * Save the content source/item
-	 *
-	 * @param array $urlParams
-	 * @param Form $form
+	 * Save the content source/item.
 	 */
 	public function save($urlParams, $form) {
 
@@ -593,6 +593,31 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'You don\'t have write access.')));
 		}
 		return $this->getResponseNegotiator()->respond($this->request);
+	}
+
+	/**
+	 * Delete the content source/item.
+	 */
+	public function delete($data, $form) {
+		$className = $this->stat('tree_class');
+
+		$record = DataObject::get_by_id($className, Convert::raw2sql($data['ID']));
+		if($record && !$record->canDelete()) return Security::permissionFailure();
+		if(!$record || !$record->ID) $this->httpError(404, "Bad record ID #" . (int)$data['ID']);
+		$type = $record->ClassName;
+		$record->delete();
+
+		Session::set("FormInfo.Form_EditForm.formError.message", "Deleted $type");
+		Session::set("FormInfo.Form_EditForm.formError.type", 'bad');
+		/*
+		$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.DELETED', 'Deleted.')));
+		return $this->getResponseNegotiator()->respond(
+			$this->request,
+			array('currentform' => array($this, 'EmptyForm'))
+		);
+		*/
+		echo '<script>window.location.reload();</script>';
+		return;
 	}
 
 }
