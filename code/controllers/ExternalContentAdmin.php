@@ -488,7 +488,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 	public function SiteTreeAsUL() {
-		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children', 'NumChildren');
+		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, null, 'NumChildren');
 		$this->extend('updateSiteTreeAsUL', $html);
 		return $html;
 	}
@@ -501,7 +501,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$html = $this->getSiteTreeFor(
 			'ExternalContentItem', 
 			$request->getVar('ID'), 
-			'Children', 
+			null,
 			'NumChildren',
 			null, 
 			$request->getVar('minNodeCount')
