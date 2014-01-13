@@ -40,7 +40,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		'view',
 		'treeview',
 		'EditForm',
-		'AddForm'
+		'AddForm',
+		'updateSources'
 	);
 
 	public function init(){
@@ -49,6 +50,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		Requirements::customCSS($this->generatePageIconsCss());
 		Requirements::css(self::$directory . '/css/external-content-admin.css');
 		Requirements::javascript(self::$directory . '/javascript/external-content-admin.js');
+		Requirements::javascript(self::$directory . '/javascript/external-content-reload.js');
 	}
 
 
@@ -150,9 +152,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		Session::set("FormInfo.Form_EditForm.formError.message",$message);
 		Session::set("FormInfo.Form_EditForm.formError.type", $messageType);
 
-		// return $this->getResponseNegotiator()->respond($this->request);
-		echo '<script>window.location.reload();</script>';
-		return;
+		return $this->getResponseNegotiator()->respond($this->request);
 	}
 
 	/**
@@ -402,12 +402,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			sprintf(_t('ExternalContent.SourceAdded', 'Successfully created %s'), $type)
 		);
 		Session::set("FormInfo.Form_EditForm.formError.type", 'good');
-		/*
+
 		$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.PROVIDERADDED', "New $type created.")));
 		return $this->getResponseNegotiator()->respond($this->request);
-		*/
-		echo '<script>window.location.reload();</script>';
-		return;
 	}
 
 
@@ -611,15 +608,22 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 		Session::set("FormInfo.Form_EditForm.formError.message", "Deleted $type");
 		Session::set("FormInfo.Form_EditForm.formError.type", 'bad');
-		/*
+
 		$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.DELETED', 'Deleted.')));
 		return $this->getResponseNegotiator()->respond(
 			$this->request,
 			array('currentform' => array($this, 'EmptyForm'))
 		);
-		*/
-		echo '<script>window.location.reload();</script>';
-		return;
+	}
+
+	/**
+	 * Retrieve the updated source list, used in an AJAX request to update the current view.
+	 * @return String
+	 */
+	public function updateSources() {
+
+		$HTML = $this->treeview($this->request)->value;
+		return preg_replace('/^\s+|\n|\r|\s+$/m', '', $HTML);
 	}
 
 }
