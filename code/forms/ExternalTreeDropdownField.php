@@ -32,60 +32,6 @@ class ExternalTreeDropdownField extends TreeDropdownField {
 	}
 
 	/**
-	 * Get the whole tree of a part of the tree via an AJAX request.
-	 *
-	 * @param SS_HTTPRequest $request
-	 * @return string
-	 */
-	public function tree(SS_HTTPRequest $request) {
-		$isSubTree = false;
-
-		$ID = $request->param('ID');
-		if ($ID && ExternalContentAdmin::isValidId($ID)) {
-
-			$obj = ExternalContent::getDataObjectFor($ID);
-			$isSubTree = true;
-
-			if (!$obj) {
-				throw new Exception(
-						"TreeDropdownField->tree(): the object #$ID of type $this->sourceObject could not be found"
-				);
-			}
-		} else {
-			if ($this->baseID) {
-				$obj = ExternalContent::getDataObjectFor($this->baseID);
-			}
-
-			if (!$this->baseID || !$obj)
-				$obj = singleton($this->sourceObject);
-		}
-
-		if ($this->filterCallback) {
-			$obj->setMarkingFilterFunction($this->filterCallback);
-		} elseif ($this->sourceObject == 'Folder') {
-			$obj->setMarkingFilter('ClassName', 'Folder');
-		}
-
-		$obj->markPartialTree(1, null);
-
-		if ($forceValues = $this->value) {
-			if (($values = preg_split('/,\s*/', $forceValues)) && count($values))
-				foreach ($values as $value) {
-					$obj->markToExpose($this->objectForKey($value));
-				}
-		}
-
-		$eval = '"<li id=\"selector-' . $this->getName() . '-{$child->' . $this->keyField . '}\" class=\"$child->class"' .
-				' . $child->markingClasses() . "\"><a rel=\"$child->ID\">" . $child->' . $this->labelField . ' . "</a>"';
-
-		if ($isSubTree) {
-			return substr(trim($obj->getChildrenAsUL('', $eval, null, true)), 4, -5);
-		}
-
-		return $obj->getChildrenAsUL('class="tree"', $eval, null, true);
-	}
-
-	/**
 	 * Get the object where the $keyField is equal to a certain value
 	 *
 	 * @param string|int $key

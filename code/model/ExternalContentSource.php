@@ -16,15 +16,15 @@
  */
 class ExternalContentSource extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Name' => 'Text',
 		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?
 	);
 	
-	static $defaults = array(
+	private static $defaults = array(
 		'ParentID' => '0'
 	);
-	static $extensions = array(
+	private static $extensions = array(
 		"Hierarchy",
 	);
 
@@ -32,7 +32,7 @@ class ExternalContentSource extends DataObject {
 	/**
 	 * @var string - icon for cms tree
 	 **/
-	public static $icon = 'cms/images/treeicons/root.png';
+	private static $icon = 'cms/images/treeicons/root.png';
 
 
 	/**

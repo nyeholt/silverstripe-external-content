@@ -23,11 +23,11 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	 * 
 	 * @var string
 	 */
-	static $url_segment = 'external-content';
-	static $url_rule = '$Action//$ID';
-	static $menu_title = 'External Content';
-	public static $tree_class = 'ExternalContentSource';
-	static $allowed_actions = array(
+	private static $url_segment = 'external-content';
+	private static $url_rule = '$Action//$ID';
+	private static $menu_title = 'External Content';
+	private static $tree_class = 'ExternalContentSource';
+	private static $allowed_actions = array(
 		'addprovider',
 		'deleteprovider',
 		'deletemarked',
@@ -40,9 +40,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		'view',
 		'treeview',
 		'EditForm',
-		'AddForm'
+		'AddForm',
+		'updateSources'
 	);
-
 
 	public function init(){
 		parent::init();
@@ -50,6 +50,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		Requirements::customCSS($this->generatePageIconsCss());
 		Requirements::css(self::$directory . '/css/external-content-admin.css');
 		Requirements::javascript(self::$directory . '/javascript/external-content-admin.js');
+		Requirements::javascript(self::$directory . '/javascript/external-content-reload.js');
 	}
 
 
@@ -151,7 +152,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		Session::set("FormInfo.Form_EditForm.formError.message",$message);
 		Session::set("FormInfo.Form_EditForm.formError.type", $messageType);
 
-		return $this->getResponseNegotiator()->respond($this->request);	
+		return $this->getResponseNegotiator()->respond($this->request);
 	}
 
 	/**
@@ -484,7 +485,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 	public function SiteTreeAsUL() {
-		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, 'Children', 'NumChildren');
+		$html = $this->getSiteTreeFor($this->stat('tree_class'), null, null, 'NumChildren');
 		$this->extend('updateSiteTreeAsUL', $html);
 		return $html;
 	}
@@ -497,7 +498,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$html = $this->getSiteTreeFor(
 			'ExternalContentItem', 
 			$request->getVar('ID'), 
-			'Children', 
+			null,
 			'NumChildren',
 			null, 
 			$request->getVar('minNodeCount')
@@ -556,6 +557,73 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$css .= "li.type-file > a .jstree-pageicon { background: transparent url('framework/admin/images/sitetree_ss_pageclass_icons_default.png') 0 0 no-repeat; }\n}";
 
 		return $css;
+	}
+
+	/**
+	 * Save the content source/item.
+	 */
+	public function save($urlParams, $form) {
+
+		// Retrieve the record.
+
+		$record = null;
+		if (isset($urlParams['ID'])) {
+			$record = ExternalContent::getDataObjectFor($urlParams['ID']);
+		}
+		if (!$record) {
+			return parent::save($urlParams, $form);
+		}
+
+		if ($record->canEdit()) {
+			// lets load the params that have been sent and set those that have an editable mapping
+			if ($record->hasMethod('editableFieldMapping')) {
+				$editable = $record->editableFieldMapping();
+				$form->saveInto($record, array_keys($editable));
+				$record->remoteWrite();
+			} else {
+				$form->saveInto($record);
+				$record->write();
+			}
+
+			// Set the form response.
+
+			$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'Saved.')));
+		} else {
+			$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.SAVEDUP', 'You don\'t have write access.')));
+		}
+		return $this->getResponseNegotiator()->respond($this->request);
+	}
+
+	/**
+	 * Delete the content source/item.
+	 */
+	public function delete($data, $form) {
+		$className = $this->stat('tree_class');
+
+		$record = DataObject::get_by_id($className, Convert::raw2sql($data['ID']));
+		if($record && !$record->canDelete()) return Security::permissionFailure();
+		if(!$record || !$record->ID) $this->httpError(404, "Bad record ID #" . (int)$data['ID']);
+		$type = $record->ClassName;
+		$record->delete();
+
+		Session::set("FormInfo.Form_EditForm.formError.message", "Deleted $type");
+		Session::set("FormInfo.Form_EditForm.formError.type", 'bad');
+
+		$this->response->addHeader('X-Status', rawurlencode(_t('LeftAndMain.DELETED', 'Deleted.')));
+		return $this->getResponseNegotiator()->respond(
+			$this->request,
+			array('currentform' => array($this, 'EmptyForm'))
+		);
+	}
+
+	/**
+	 * Retrieve the updated source list, used in an AJAX request to update the current view.
+	 * @return String
+	 */
+	public function updateSources() {
+
+		$HTML = $this->treeview($this->request)->value;
+		return preg_replace('/^\s+|\n|\r|\s+$/m', '', $HTML);
 	}
 
 }
