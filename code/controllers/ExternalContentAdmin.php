@@ -238,7 +238,13 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 					ExternalContentTransformer::DS_SKIP => ExternalContentTransformer::DS_SKIP,
 				);
 
-				$fields->addFieldToTab('Root.Import', new OptionsetField("DuplicateMethod", _t('ExternalContent.DUPLICATES', 'Select how duplicate items should be handled'), $duplicateOptions));
+				$fields->addFieldToTab('Root.Import', new OptionsetField(
+						"DuplicateMethod", 
+						_t('ExternalContent.DUPLICATES', 'Select how duplicate items should be handled'), 
+						$duplicateOptions, 
+						$duplicateOptions[ExternalContentTransformer::DS_SKIP]
+					)
+				);
 				
 				if (class_exists('QueuedJobDescriptor')) {
 					$repeats = array(
