@@ -335,13 +335,15 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		foreach ($classes as $key => $class) {
 			if (!singleton($class)->canCreate())
 				unset($classes[$key]);
+			$classes[$key] = FormField::name_to_label($class);
 		}
 
 		$fields = new FieldList(
 			new HiddenField("ParentID"),
 			new HiddenField("Locale", 'Locale', i18n::get_locale()),
-			new DropdownField("ProviderType", "", $classes)
+			$type = new DropdownField("ProviderType", "", $classes)
 		);
+		$type->setAttribute('style', 'width:150px');
 
 		$actions = new FieldList(
 			FormAction::create("addprovider", _t('ExternalContent.CREATE', "Create"))
@@ -403,7 +405,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		);
 		Session::set("FormInfo.Form_EditForm.formError.type", 'good');
 
-		$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.PROVIDERADDED', "New $type created.")));
+		$msg = "New " . FormField::name_to_label($type) . " created";
+		$this->response->addHeader('X-Status', rawurlencode(_t('ExternalContent.PROVIDERADDED', $msg)));
 		return $this->getResponseNegotiator()->respond($this->request);
 	}
 
