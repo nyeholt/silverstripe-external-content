@@ -30,6 +30,7 @@ abstract class ExternalContentImporter extends Object {
 	 * @param array $params All parameters passed with the import request.
 	 */
 	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='Overwrite', $params = array()) {
+		$this->runOnImportStart();
 		$this->params = $params;
 
 		// if the queuedjobs module exists, use that
@@ -57,6 +58,7 @@ abstract class ExternalContentImporter extends Object {
 		}
 
 		$this->importChildren($children, $target, $includeChildren, $duplicateStrategy);
+		$this->runOnImportEnd();
 	}
 
 	/**
@@ -97,4 +99,18 @@ abstract class ExternalContentImporter extends Object {
 	 * 			The type of the ExternalContentItem
 	 */
 	protected abstract function getExternalType($item);
+	
+	/**
+	 * Allow subclasses to run custom logic immediately prior to import start.
+	 * Not declared abstract so method can be optionally defined on subclasses.
+	 */
+	public function runOnImportStart() {
+	}
+	
+	/**
+	 * Allow subclasses to run custom logic immediately after to import end.
+	 * Not declared abstract so method can be optionally defined on subclasses.
+	 */	
+	public function runOnImportEnd() {
+	}
 }
