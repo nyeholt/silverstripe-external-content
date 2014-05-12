@@ -68,16 +68,51 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		parent::pageStatus();
 	}
 
+	/**
+	 * 
+	 * If there's no ExternalContentSource ID available from Session or Request data then instead of
+	 * LeftAndMain::currentPageID() returning just `null`, "extend" its range to use the first sub-class
+	 * of {@link ExternalContentSource} the system can find, either via config or introspection.
+	 * 
+	 * @return number | null
+	 */
+	public function getCurrentPageID() {
+		if(!$id = $this->currentPageID()) {
+			// Try an id from an ExternalContentSource Subclass
+			$defaultSources = ClassInfo::getValidSubClasses('ExternalContentSource');
+			array_shift($defaultSources);
+			// Use one if defined in config, otherwise use first one found through reflection
+			$defaultSourceConfig = Config::inst()->get('ExternalContentSource', 'default_source');
+			if($defaultSourceConfig) {
+				$class = $defaultSourceConfig;
+			}
+			else if(isset($defaultSources[0])) {
+				$class = $defaultSources[0];
+			}
+			else {
+				$class = null;
+			}
+			
+			if($class && $source = DataObject::get($class)->first()) {
+				return $source->ID;
+			}
+			return null;
+		}
+		return $id;
+	}	
 
 	/**
+	 * 
 	 * Custom currentPage() method to handle opening the 'root' folder
+	 * 
+	 * @return DataObject
 	 */
 	public function currentPage() {
-		$id = $this->currentPageID();
+		$id = $this->getCurrentPageID();
 		if (preg_match(ExternalContent::ID_FORMAT, $id)) {
-
 			return ExternalContent::getDataObjectFor($id);
-		} else if ($id == 'root') {
+		}
+		if ($id == 'root') {
 			return singleton($this->stat('tree_class'));
 		}
 	}
@@ -180,7 +215,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	public function EditForm($request = null) {
 		HtmlEditorField::include_js();
 
-		$cur = $this->currentPageID();
+		$cur = $this->getCurrentPageID();
 		if ($cur) {
 			$record = $this->currentPage();
 			if (!$record)
@@ -190,7 +225,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		}
 
 		if ($this->hasMethod('getEditForm')) {
-			return $this->getEditForm($this->currentPageID());
+			return $this->getEditForm($this->getCurrentPageID());
 		}
 
 		return false;
@@ -204,7 +239,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$record = null;
 
 		if(!$id){
-			$id = $this->currentPageID();
+			$id = $this->getCurrentPageID();
 		}
 
 		if ($id && $id != "root") {
