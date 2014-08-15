@@ -139,6 +139,10 @@ class ExternalContentItem extends DataObject {
 	 * @return String
 	 */
 	function Link($action = null) {
+		$cur = Controller::curr();
+		if ($cur instanceof ExternalContentPage_Controller) {
+			return $cur->data()->LinkFor($this, 'view');
+		}
 		return ExternalContentPage_Controller::URL_STUB . '/view/' . $this->ID;
 	}
 
@@ -150,6 +154,10 @@ class ExternalContentItem extends DataObject {
 	 * @return String
 	 */
 	function RelativeLink($action = null) {
+		$cur = Controller::curr();
+		if ($cur instanceof ExternalContentPage_Controller) {
+			return $cur->data()->LinkFor($this, 'view');
+		}
 		return ExternalContentPage_Controller::URL_STUB . '/view/' . $this->ID;
 	}
 
@@ -161,6 +169,10 @@ class ExternalContentItem extends DataObject {
 	public function DownloadLink() {
 		// get the base URL, prepend with the external content 
 		// controller /download action and add this object's id
+		$cur = Controller::curr();
+		if ($cur instanceof ExternalContentPage_Controller) {
+			return $cur->data()->LinkFor($this, 'download');
+		}
 		return ExternalContentPage_Controller::URL_STUB . '/download/' . $this->ID;
 	}
 

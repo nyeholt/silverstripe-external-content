@@ -35,11 +35,20 @@ class ExternalContentPage extends Page {
 	 */
 	public function RelativeLink($action = null) {
 		$remoteObject = $this->ContentItem();
-		if (!$remoteObject) {
-
-			return parent::RelativeLink();
+		if (!is_string($action)) {
+			$action = null;
 		}
-		return $remoteObject->RelativeLink();
+		if ($remoteObject) {
+			return $this->LinkFor($remoteObject, $action ? $action : 'view');
+		}
+		return parent::RelativeLink($action);
+	}
+	
+	public function LinkFor($remoteObject, $action = null) {
+		$link = parent::RelativeLink();
+		$id = $remoteObject->ID;
+		// otherwise, we're after $this link (view) plus id
+		return Controller::join_links($link, $action, $id);
 	}
 
 	/**
@@ -49,6 +58,10 @@ class ExternalContentPage extends Page {
 	 * @var ExternalContentItem
 	 */
 	private $requestedItem;
+	
+	public function setRequestedItem($item) {
+		$this->requestedItem = $item;
+	}
 
 	/**
 	 * Get the external content item
@@ -119,16 +132,22 @@ class ExternalContentPage_Controller extends Page_Controller {
 	 */
 	public function view($request) {
 		$object = null;
-		if ($request->param('ID')) {
-			$object = ExternalContent::getDataObjectFor($request->param('ID'));
+		if ($id = $request->param('ID')) {
+			$object = ExternalContent::getDataObjectFor($id);
 			if ($object instanceof ExternalContentSource) {
 				$object = $object->getRoot();
 			}
 
 			if ($object && ($object instanceof ExternalContentItem || $object instanceof ExternalContentSource)) {
+				$this->data()->setRequestedItem($object);
 				$type = $object instanceof ExternalContentItem ? $object->getType() : 'source';
 				$template = 'ExternalContent_' . get_class($object) . '_' . $type;
-				return $this->customise($object)->renderWith(array($template, 'ExternalContent_' . get_class($object), 'ExternalContent', 'Page'));
+				
+				$viewer = new SSViewer(array($template, 'ExternalContent_' . get_class($object), 'ExternalContent', 'Page'));
+				$action = 'view';
+				$this->extend('updateViewer', $action, $viewer);
+				
+				return $this->customise($object)->renderWith($viewer);
 			}
 		}
 
@@ -148,5 +167,4 @@ class ExternalContentPage_Controller extends Page_Controller {
 			}
 		}
 	}
-
 }
