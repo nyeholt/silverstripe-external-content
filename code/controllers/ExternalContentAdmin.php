@@ -41,7 +41,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		'treeview',
 		'EditForm',
 		'AddForm',
-		'updateSources'
+		'updateSources',
+		'updatetreenodes'
 	);
 
 	public function init(){
@@ -669,7 +670,11 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$HTML = $this->treeview($this->request)->value;
 		return preg_replace('/^\s+|\n|\r|\s+$/m', '', $HTML);
 	}
+	
+	
+	public function updatetreenodes($request) {
+		// noop
+		return parent::updatetreenodes($request);
+	}
 
 }
-
-?>
