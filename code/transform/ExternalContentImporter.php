@@ -11,6 +11,8 @@ abstract class ExternalContentImporter extends Object {
 	protected $contentTransforms = array();
 	protected $params = array();
 
+	private static $use_queue = true;
+	
 	/**
 	 * @return array
 	 */
@@ -35,7 +37,7 @@ abstract class ExternalContentImporter extends Object {
 
 		// if the queuedjobs module exists, use that
 		$queuedVersion = 'Queued' . get_class($this);
-		if (ClassInfo::exists('QueuedJob') && ClassInfo::exists($queuedVersion)) {
+		if ($this->config()->use_queue && ClassInfo::exists('QueuedJob') && ClassInfo::exists($queuedVersion)) {
 			$importer = new $queuedVersion(
 							$contentItem,
 							$target,
