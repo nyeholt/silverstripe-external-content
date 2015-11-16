@@ -18,7 +18,8 @@ class ExternalContentSource extends DataObject {
 
 	private static $db = array(
 		'Name' => 'Text',
-		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?
+		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?,
+		'Sort' => 'Int'
 	);
 	
 	private static $defaults = array(
@@ -93,6 +94,7 @@ class ExternalContentSource extends DataObject {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
+		$fields->removeByName('Sort');
 		$fields->removeByName('ParentID');
 		$fields->addFieldToTab('Root.Main', new TextField('Name', _t('ExternalContentSource.NAME', 'Name')));
 		$fields->addFieldToTab('Root.Main', new CheckboxField("ShowContentInMenu", _t('ExternalContentSource.SHOW_IN_MENUS', 'Show Content in Menus')));
