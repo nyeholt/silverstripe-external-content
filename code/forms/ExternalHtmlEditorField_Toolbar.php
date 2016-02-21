@@ -2,25 +2,25 @@
 
 /**
  * Overridden toolbar that handles external content linking
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @deprecated
  *
  */
 class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 	protected $controller, $name;
-	
+
 	function __construct($controller, $name) {
 		parent::__construct();
-		
+
 		$this->controller = $controller;
 		$this->name = $name;
 	}
-	
+
 	/**
 	 * Return a {@link Form} instance allowing a user to
 	 * add links in the TinyMCE content editor.
-	 *  
+	 *
 	 * @return Form
 	 */
 	function LinkForm() {
@@ -29,12 +29,12 @@ class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 
 		$form = new Form(
 			$this->controller,
-			"{$this->name}/LinkForm", 
+			"{$this->name}/LinkForm",
 			new FieldSet(
 				new LiteralField('Heading', '<h2><img src="cms/images/closeicon.gif" alt="' . _t('HtmlEditorField.CLOSE', 'close').'" title="' . _t('HtmlEditorField.CLOSE', 'close') . '" />' . _t('HtmlEditorField.LINK', 'Link') . '</h2>'),
 				new OptionsetField(
 					'LinkType',
-					_t('HtmlEditorField.LINKTO', 'Link to'), 
+					_t('HtmlEditorField.LINKTO', 'Link to'),
 					array(
 						'internal' => _t('HtmlEditorField.LINKINTERNAL', 'Page on the site'),
 						'external' => _t('HtmlEditorField.LINKEXTERNAL', 'Another website'),
@@ -59,16 +59,16 @@ class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 				new FormAction('remove', _t('HtmlEditorField.BUTTONREMOVELINK', 'Remove link'))
 			)
 		);
-		
+
 		$form->loadDataFrom($this);
-		
+
 		return $form;
 	}
 
 	/**
 	 * Return a {@link Form} instance allowing a user to
 	 * add images to the TinyMCE content editor.
-	 *  
+	 *
 	 * @return Form
 	 */
 	function ImageForm() {
@@ -121,10 +121,10 @@ class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 				new FormAction('insertimage', _t('HtmlEditorField.BUTTONINSERTIMAGE', 'Insert image'))
 			)
 		);
-		
+
 		$form->disableSecurityToken();
 		$form->loadDataFrom($this);
-		
+
 		return $form;
 	}
 
@@ -136,7 +136,7 @@ class ExternalHtmlEditorField_Toolbar extends RequestHandler {
 
 		$form = new Form(
 			$this->controller,
-			"{$this->name}/FlashForm", 
+			"{$this->name}/FlashForm",
 			new FieldSet(
 				new LiteralField('Heading', '<h2><img src="cms/images/closeicon.gif" alt="'._t('HtmlEditorField.CLOSE', 'close').'" title="'._t('HtmlEditorField.CLOSE', 'close').'" />'._t('HtmlEditorField.FLASH', 'Flash').'</h2>'),
 				new TreeDropdownField("FolderID", _t('HtmlEditorField.FOLDER'), "Folder"),

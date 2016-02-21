@@ -4,7 +4,7 @@ class ExternalTreeDropdownField extends TreeDropdownField {
 
 	/**
 	 * Should children be selectable when this tree is shown
-	 * 
+	 *
 	 * @var boolean
 	 */
 	protected $showChildren;
@@ -23,8 +23,8 @@ class ExternalTreeDropdownField extends TreeDropdownField {
 	}
 
 	/**
-	 * Override to allow for compound IDs 
-	 * 
+	 * Override to allow for compound IDs
+	 *
 	 * @param mixed $ID
 	 */
 	public function setTreeBaseID($ID) {

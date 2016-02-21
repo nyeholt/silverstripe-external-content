@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Parent class for all ExternalContentItems. 
- * 
- * On construction, an ExternalContentItem subclass must load data from the 
+ * Parent class for all ExternalContentItems.
+ *
+ * On construction, an ExternalContentItem subclass must load data from the
  * remote repository through the appropriate API layer as returned by getRemoteRepository()
- * from the external content source. It is then up to the content item to 
- * store that data in a way that can be used by the rest of SilverStripe. 
- * 
- * For now, the ExternalContentItem provides the remoteProperties map for 
- * storing things, with __get and __set magic methods for retrieving values. 
+ * from the external content source. It is then up to the content item to
+ * store that data in a way that can be used by the rest of SilverStripe.
+ *
+ * For now, the ExternalContentItem provides the remoteProperties map for
+ * storing things, with __get and __set magic methods for retrieving values.
  * Some implementations may choose to store the data in a separate object (for
  * example, the AlfrescoContentItem implementation simply stores things in its
- * contained CMIS object and maps back and forward from that). 
- * 
+ * contained CMIS object and maps back and forward from that).
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD License http://silverstripe.org/bsd-license
  */
@@ -36,7 +36,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * The ID of this item in the remote system
-	 * 
+	 *
 	 * @var mixed
 	 */
 	protected $externalId;
@@ -47,7 +47,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * The content source object that this item belongs to
-	 * 
+	 *
 	 * @var ExternalContentSource
 	 */
 	protected $source;
@@ -55,22 +55,22 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * The child nodes of this item
-	 * 
+	 *
 	 * @var ArrayList
 	 */
 	private $children;
 
 	/**
-	 * Create a new external content item. 
-	 * 
+	 * Create a new external content item.
+	 *
 	 * @param mixed $source
 	 * 			The contentSource object this item was laoded through
 	 * @param mixed $id
 	 * 			The ID of the item in the remote system
 	 * @param mixed $content
 	 * 			A raw representation of the remote item. This allows for
-	 * 			some systems loading up entire representations when you make 
-	 * 			a call to 'getChildren', for example. 
+	 * 			some systems loading up entire representations when you make
+	 * 			a call to 'getChildren', for example.
 	 */
 	public function __construct($source=null, $id=null) {
 		parent::__construct();
@@ -84,7 +84,7 @@ class ExternalContentItem extends DataObject {
 			$this->init();
 		}
 	}
-	
+
 	/**
 	 * Return the ID of the item in its remote system
 	 *
@@ -95,11 +95,11 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * Get the type of this external object. 
-	 * 
+	 * Get the type of this external object.
+	 *
 	 * Child classes must implement this as a method for certain functionality
-	 * to know what the remote object is 
-	 * 
+	 * to know what the remote object is
+	 *
 	 * @return String
 	 */
 	public function getType() {
@@ -110,7 +110,7 @@ class ExternalContentItem extends DataObject {
 	 * Initialise this object based on its source object
 	 */
 	protected function init() {
-		
+
 	}
 
 	/**
@@ -134,7 +134,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * Return a URL that simply links back to the externalcontentadmin
 	 * class' 'view' action
-	 * 
+	 *
 	 * @param $action
 	 * @return String
 	 */
@@ -149,7 +149,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * Return a URL that simply links back to the externalcontentadmin
 	 * class' 'view' action
-	 * 
+	 *
 	 * @param $action
 	 * @return String
 	 */
@@ -163,11 +163,11 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * Where this can be downloaded from
-	 * 
+	 *
 	 * @return string
 	 */
 	public function DownloadLink() {
-		// get the base URL, prepend with the external content 
+		// get the base URL, prepend with the external content
 		// controller /download action and add this object's id
 		$cur = Controller::curr();
 		if ($cur instanceof ExternalContentPage_Controller) {
@@ -178,7 +178,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * Get the importer for this content item
-	 * 
+	 *
 	 * @return ExternalContentImporter
 	 */
 	public function getContentImporter($target=null) {
@@ -186,8 +186,8 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * Where can this content be imported to? 
-	 * 
+	 * Where can this content be imported to?
+	 *
 	 * @return array
 	 */
 	public function allowedImportTargets() {
@@ -199,12 +199,12 @@ class ExternalContentItem extends DataObject {
 	 * node. Child classes should implement their own version
 	 */
 	public function Content() {
-		
+
 	}
 
 	/**
 	 * Called to stream this content item (if it is streamable)
-	 * 
+	 *
 	 */
 	public function streamContent() {
 		throw new Exception("This object cannot be streamed");
@@ -213,7 +213,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * Always return at least one as we never know til we load
 	 * whether this item has children or not
-	 * 
+	 *
 	 * @return int
 	 */
 	public function numChildren() {
@@ -223,7 +223,7 @@ class ExternalContentItem extends DataObject {
 	/**
 	 * Overridden to load all children from a remote content
 	 * source  instead of this node directly
-	 * 
+	 *
 	 * @param boolean $showAll
 	 * @return ArrayList
 	 */
@@ -259,7 +259,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * For now just show a field that says this can't be edited
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)
 	 */
 	public function getCMSFields() {
@@ -301,32 +301,32 @@ class ExternalContentItem extends DataObject {
 
 		return $fields;
 	}
-	
+
 	/**
 	 * Return a mapping of remote field name => field type
-	 * 
+	 *
 	 * Note that this also defines the list of fields on the remote object that can be edited by end users
 	 * and is examined before a form save is triggered
-	 * 
+	 *
 	 */
 	public function editableFieldMapping() {
 		return array();
 	}
-	
+
 	/**
 	 * Write back to the content source
 	 */
 	public function remoteWrite($member = null) {
-		
+
 	}
 
 	/**
-	 * We flag external content as being editable so it's 
-	 * accessible in the backend, but the individual 
+	 * We flag external content as being editable so it's
+	 * accessible in the backend, but the individual
 	 * implementations will protect users from editing... for now
-	 * 
+	 *
 	 * TODO: Fix this up to use proper permission checks
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
 	public function canEdit($member = null) {
@@ -334,11 +334,11 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * Is this item viewable? 
-	 * 
+	 * Is this item viewable?
+	 *
 	 * Just proxy to the content source for now. Child implementations can
 	 * override if needbe
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
 	public function canView($member = null) {
@@ -357,15 +357,15 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * The list of properties loaded from a remote data source
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $remoteProperties;
 
 	/**
-	 * Overriding the default behaviour to not worry about how it 
+	 * Overriding the default behaviour to not worry about how it
 	 * needs to work with the DB
-	 * 
+	 *
 	 * @see sapphire/core/ViewableData#__set($property, $value)
 	 */
 	public function __set($prop, $val) {
@@ -374,7 +374,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * Return from the parent object if it's not in here...
-	 * 
+	 *
 	 * @see sapphire/core/ViewableData#__get($property)
 	 */
 	function __get($prop) {
@@ -396,9 +396,9 @@ class ExternalContentItem extends DataObject {
 	}
 
 	/**
-	 * Override to let remote objects figure out whether they have a 
+	 * Override to let remote objects figure out whether they have a
 	 * field or not
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#hasField($field)
 	 */
 	public function hasField($field) {
@@ -407,7 +407,7 @@ class ExternalContentItem extends DataObject {
 
 	/**
 	 * Get all the remote properties
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getRemoteProperties() {
@@ -423,7 +423,7 @@ class ExternalContentItem extends DataObject {
 	 * @param $limit A limit expression, either "(count)", or "(start), (count)"
 	 */
 	function instance_get($filter = "", $sort = "", $join = "", $limit = "", $containerClass = "ArrayList") {
-		
+
 	}
 
 	/**
@@ -435,23 +435,23 @@ class ExternalContentItem extends DataObject {
 	 * @param $limit A limit expression, either "(count)", or "(start), (count)"
 	 */
 	function instance_get_one($filter, $sort = "") {
-		
+
 	}
-	
+
 
 	/**
 	 * Write the current object back to the database.  It should know whether this is a new object, in which case this would
-	 * be an insert command, or if this is an existing object queried from the database, in which case thes would be 
+	 * be an insert command, or if this is an existing object queried from the database, in which case thes would be
 	 */
 	function write() {
-		
+
 	}
 
 	/**
 	 * Remove this object from the database.  Doesn't do anything if this object isn't in the database.
 	 */
 	function delete() {
-		
+
 	}
 
 	/**
@@ -500,7 +500,7 @@ class ExternalContentItem extends DataObject {
 		if (!$title) {
 			$title = $this->Name;
 		}
-		
+
 		$treeTitle = sprintf(
 			"<span class=\"jstree-pageicon\"></span><span class=\"item\">%s</span>",
 			Convert::raw2xml(str_replace(array("\n","\r"),"", $title))

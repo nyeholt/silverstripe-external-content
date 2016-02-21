@@ -3,7 +3,7 @@
  * A set of utility functions commonly used in all sites
  *
  * @license http://silverstripe.org/bsd-license
- * @author Marcus Nyeholt <marcus@silverstripe.com.au> 
+ * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  */
 class ECUtils {
 	public function __construct() {}

@@ -30,18 +30,18 @@ LinkForm.prototype = {
 			item.onclick = this.linkTypeChanged.bind(this);
 		}
 	},
-	
+
 	destroy: function() {
 		this.ToolbarForm = null;
 		this.onsubmit = null;
-		
+
 		var i,item;
 		for(i=0;item=this.elements.LinkType[i];i++) {
 			item.parentForm = null;
 			item.onclick = null;
 		}
 	},
-	
+
 	linkTypeChanged: function(setDefaults) {
 		var linkType = Form.Element.getValue(this.elements.LinkType);
 		var list =  ['internal', 'external', 'file', 'externalcontent', 'email'];
@@ -57,31 +57,31 @@ LinkForm.prototype = {
  		    }
 		}
 	},
-	
+
 	toggle: function(ed) {
 		this.ToolbarForm.toggle(ed);
 		this.respondToNodeChange(ed);
 	},
-	
+
 	open: function(ed) {
 		this.ToolbarForm.open();
-		
+
 		this.originalSelection = null;
 		var mceInst = tinyMCE.activeEditor;
 	},
-	
+
 	updateSelection: function(ed) {
 		if(ed.selection.getRng()) {
 		    this.originalSelection = ed.selection.getRng();
 	    }
     },
-	
+
 	respondToNodeChange: function(ed) {
 	    if(ed == null) ed = tinyMCE.activeEditor;
-	    
+
 		if(this.style.display == 'block') {
 			var i,data = this.getCurrentLink(ed);
-			
+
 			if(data) {
 				for(i in data) {
 					if(this.elements[i]) {
@@ -89,7 +89,7 @@ LinkForm.prototype = {
 						Form.Element.setValue(this.elements[i], data[i]);
 					}
 				}
-				
+
 			// If we haven't selected an existing link, then just make sure we default to "internal" for the link
 			// type.
 			} else {
@@ -98,11 +98,11 @@ LinkForm.prototype = {
 			this.linkTypeChanged(data ? false : true);
 		}
 	},
-	
+
 	handleaction_insert: function() {
 		var href;
 		var target = null;
-		
+
 		switch(Form.Element.getValue(this.elements.LinkType)) {
 			case 'internal':
 				href = '[sitetree_link id=' + this.elements.internal.value + ']';
@@ -113,35 +113,35 @@ LinkForm.prototype = {
 				break;
 
 			case 'anchor':
-				href = '#' + this.elements.Anchor.value; 
+				href = '#' + this.elements.Anchor.value;
 				if($('Form_EditorToolbarLinkForm_TargetBlank')) {
 					if($('Form_EditorToolbarLinkForm_TargetBlank').checked) target = '_blank';
 				}
 				break;
-			
+
 			case 'file':
 				href = this.elements.file.value;
 				target = '_blank';
 				break;
-				
+
 			case 'externalcontent':
 				href = this.elements.externalcontent.value;
 				target = '_blank';
 				break;
 
 			case 'email':
-				href = 'mailto:' + this.elements.email.value; 
+				href = 'mailto:' + this.elements.email.value;
 				break;
 
 			case 'external':
 			default:
-				href = this.elements.external.value; 
+				href = this.elements.external.value;
 				if($('Form_EditorToolbarLinkForm_TargetBlank')) {
 				    if($('Form_EditorToolbarLinkForm_TargetBlank').checked) target = '_blank';
 				}
 				break;
 		}
-		
+
 		if(this.originalSelection) {
 		    tinyMCE.activeEditor.selection.setRng(this.originalSelection);
 		}
@@ -157,10 +157,10 @@ LinkForm.prototype = {
 			}
 		}
 		*/
-		
+
 		var attributes = {
-		    href : href, 
-		    target : target, 
+		    href : href,
+		    target : target,
 		    title : this.elements.Description.value,
 		    innerHTML : this.elements.LinkText.value ? this.elements.LinkText.value : "Your Link"
 		};
@@ -176,7 +176,7 @@ LinkForm.prototype = {
         // Add the new link
 		this.ssInsertLink(tinyMCE.activeEditor, attributes);
 	},
-	
+
 	/**
 	 * Insert a link into the given editor.
 	 * Replaces mceInsertLink in that innerHTML can also be set
@@ -214,21 +214,21 @@ LinkForm.prototype = {
 			else
 				ed.dom.remove(e, 1);
 		}
-		
+
 		this.respondToNodeChange(ed);
 	},
-	
+
 	handleaction_remove: function() {
 		tinyMCE.activeEditor.execCommand('unlink', false);
 	},
-	
+
 	/**
 	 * Return information about the currently selected link, suitable for population of the link
 	 * form.
 	 */
 	getCurrentLink: function(ed) {
 	    if(ed == null) ed = tinyMCE.activeEditor;
-	    
+
 		var selectedText = "";
 	    selectedText = ed.selection.getContent({format : 'text'});
 	    var selectedElement = ed.selection.getNode();
@@ -240,7 +240,7 @@ LinkForm.prototype = {
 	    */
 
 		var href = "", target = "", title = "", onclick = "", action = "insert", style_class = "";
-		
+
 		// We use a separate field for linkDataSource from tinyMCE.linkElement.
 		// If we have selected beyond the range of an <a> element, then use use that <a> element to get the link data source,
 		// but we don't use it as the destination for the link insertion
@@ -265,7 +265,7 @@ LinkForm.prototype = {
 				}
 			}
 		}
-		
+
 		// Is anchor not a link
 		if (linkDataSource != null && tinymce.DOM.getAttrib(linkDataSource, 'href') == "")
 			linkDataSource = null;
@@ -295,14 +295,14 @@ LinkForm.prototype = {
 			href = eval(tinyMCE.settings['urlconverter_callback'] + "(href, linkDataSource, true);");
 			action = "update";
 		}
-		
+
 		// Turn into relative
 		if(href.match(new RegExp('^' + tinyMCE.settings['document_base_url'] + '(.*)$'))) {
 			href = RegExp.$1;
 		}
-		
+
 		var linkText = ed.selection.getContent({format : 'html'}).replace(/<\/?a[^>]*>/ig,'');
-		
+
 		if(href.match(/^mailto:(.*)$/)) {
 			return {
 				LinkType: 'email',
@@ -348,8 +348,8 @@ LinkForm.prototype = {
 		        LinkText: linkText
 		    }
 		}
-	}		
-	
+	}
+
 }
 
 SideFormAction = Class.create();
@@ -363,7 +363,7 @@ SideFormAction.prototype = {
 	destroy: function() {
 		this.parentForm = null;
 		this.onclick = null;
-		
+
 	},
 	onclick: function() {
 		if(this.parentForm['handle' + this.name]) {
@@ -383,7 +383,7 @@ ImageForm = Class.extend('ToolbarForm');
 ImageForm.prototype = {
 	initialize: function() {
 		var __form = this;
-		
+
 		this.elements.AltText.onkeyup = function() {
 			__form.update_params('AltText');
 		};
@@ -416,13 +416,13 @@ ImageForm.prototype = {
 			tinyMCE.imgElement.alt = this.elements.AltText.value;
 			tinyMCE.imgElement.title = this.elements.ImageTitle.value;
 			tinyMCE.imgElement.className = this.elements.CSSClass.value;
-			
+
 			// Proportionate updating of heights
 			if(updatedFieldName == 'Width') {
 				tinyMCE.imgElement.width = this.elements.Width.value;
 				tinyMCE.imgElement.removeAttribute('height');
 				this.elements.Height.value = tinyMCE.imgElement.height;
-				
+
 			} else if(updatedFieldName == 'Height') {
 				tinyMCE.imgElement.height = this.elements.Height.value;
 				tinyMCE.imgElement.removeAttribute('width');
@@ -443,7 +443,7 @@ ImageForm.prototype = {
 			this.elements.CSSClass.value = 'left';
 		}
 	},
-	
+
 	selectImage: function(image) {
 		if(this.selectedImage) {
 			this.selectedImage.setAttribute("class", "");
@@ -452,7 +452,7 @@ ImageForm.prototype = {
 		this.selectedImage = image;
 		this.selectedImage.setAttribute("class", "selectedImage");
 		this.selectedImage.className = "selectedImage";
-		
+
 		try {
 			var imgTag = image.getElementsByTagName('img')[0];
 			$('Form_EditorToolbarImageForm_Width').value = imgTag.className.match(/destwidth=([0-9.\-]+)([, ]|$)/) ? RegExp.$1 : null;
@@ -460,13 +460,13 @@ ImageForm.prototype = {
 		} catch(er) {
 		}
 	},
-	
+
 	handleaction_insertimage: function() {
 		if(this.selectedImage) {
 			this.selectedImage.insert();
 		}
 	},
-	
+
 	handleaction_editimage: function() {
 		if(this.selectedImage) {
 			this.selectedImage.edit();
@@ -477,14 +477,14 @@ ImageForm.prototype = {
 ImageThumbnail = Class.create();
 ImageThumbnail.prototype = {
 	destroy: function() {
-		this.onclick = null;		
+		this.onclick = null;
 	},
-	
+
 	onclick: function(e) {
 		$('Form_EditorToolbarImageForm').selectImage(this);
 		return false;
 	},
-	
+
 	edit: function() {
 		var windowWidth = Element.getDimensions(window.top.document.body).width;
        var windowHeight = Element.getDimensions(window.top.document.body).height;
@@ -520,7 +520,7 @@ ImageThumbnail.prototype = {
 		window.top.document.body.appendChild(divRight);
 		return;
 	},
-	
+
 	insert: function() {
 		var formObj = $('Form_EditorToolbarImageForm');
 		var altText = formObj.elements.AltText.value;
@@ -529,10 +529,10 @@ ImageThumbnail.prototype = {
 		var baseURL = document.getElementsByTagName('base')[0].href;
 		var relativeHref = this.href.substr(baseURL.length);
 		var captionText = formObj.elements.CaptionText.value;
-		
+
 		if(!tinyMCE.selectedInstance) tinyMCE.selectedInstance = tinyMCE.activeEditor;
 		if(tinyMCE.selectedInstance.contentWindow.focus) tinyMCE.selectedInstance.contentWindow.focus();
-		
+
 		this.ssInsertImage(tinyMCE.activeEditor, {
 			'src' : relativeHref,
 			'alt' : altText,
@@ -541,17 +541,17 @@ ImageThumbnail.prototype = {
 			'title' : titleText,
 			'class' : cssClass
 		}, captionText);
-		
+
 		return false;
 	},
-	
+
 	/**
 	 * Insert an image with the given attributes
 	 */
 	 ssInsertImage: function(ed, attributes, captionText) {
 		el = ed.selection.getNode();
 		var html;
-		
+
 		if(captionText) {
 			html = '<div style="width: ' + attributes.width + 'px;" class="captionImage ' + attributes['class'] + '">';
 			html += '<img id="__mce_tmp" />';
@@ -560,20 +560,20 @@ ImageThumbnail.prototype = {
 		} else {
 			html = '<img id="__mce_tmp" />';
 		}
-		
+
 		if(el && el.nodeName == 'IMG') {
 			ed.dom.setAttribs(el, attributes);
 		} else {
 			ed.execCommand('mceInsertContent', false, html, {
 				skip_undo : 1
 			});
-			
+
 			ed.dom.setAttribs('__mce_tmp', attributes);
 			ed.dom.setAttrib('__mce_tmp', 'id', '');
 			ed.undoManager.add();
 		}
 	}
-	
+
 }
 
 var selectedimage = false;
@@ -599,7 +599,7 @@ function reselectImage(transport) {
       newImages.each(function(item) {
           tinyMCEImageEnhancement.addToTinyMCE(item.childNodes[0]);
       });
-      tinyMCEImageEnhancement.processInProgress = false;  
+      tinyMCEImageEnhancement.processInProgress = false;
 }
 
 function imageEditorClosed() {
@@ -617,7 +617,7 @@ function imageEditorClosed() {
 					break;
 				}
 			}
-		
+
 			// Trick the folder dropdown into registering a change, so the image thumbnails are reloaded
 			folderID = $('Form_EditorToolbarImageForm_FolderID').value;
 			$('Image').ajaxGetFiles(folderID, null, reselectImage);
@@ -660,14 +660,14 @@ FlashForm.prototype = {
 FlashThumbnail = Class.create();
 FlashThumbnail.prototype = {
 	destroy: function() {
-		this.onclick = null;		
+		this.onclick = null;
 	},
-	
+
 	onclick: function(e) {
 		$('Form_EditorToolbarFlashForm').selectFlash(this);
 		return false;
 	},
-	
+
 	insert: function() {
 		var formObj = $('Form_EditorToolbarFlashForm');
 		var html = '';
@@ -689,7 +689,7 @@ FlashThumbnail.prototype = {
 
 		tinyMCE.selectedInstance.execCommand("mceInsertContent", false, html);
 		tinyMCE.selectedInstance.execCommand('mceRepaint');
-	//	ed.execCommand('mceInsertContent', false, html, {skip_undo : 1}); 
+	//	ed.execCommand('mceInsertContent', false, html, {skip_undo : 1});
 		return false;
 	}
 }
@@ -738,7 +738,7 @@ MCEImageResizer.prototype = {
 		if(this.aspectRatio == null) {
 			this.aspectRatio = this.height / this.width;
 		}
-	
+
 		this.originalWidth = this.width;
 		this.originalHeight = this.height;
 	},
@@ -748,25 +748,25 @@ MCEImageResizer.prototype = {
 		while(f && f.tagName.toLowerCase() != 'body') f = f.parentNode;
 		return f;
 	},
-	
+
 	resizeTo: function(width, height) {
 		var newWidth = parseInt(height);
 		var newHeight = parseInt(height) - this.heightDiff;
 		if(isNaN(newWidth)) newWidth = this.width;
 		if(isNaN(newHeight)) newHeight = this.height;
-		
+
 		// Constrain to width of the window
 		if((this.offsetLeft + this.offsetWidth + 20) > this.ownerDoc().offsetWidth)
 			newWidth += (this.ownerDoc().offsetWidth - this.offsetLeft - this.offsetWidth - 20);
-	
+
 		if(this.aspectRatio) {
 			// Figure out which dimension we have altered more
-			var heightChange = this.originalHeight / this.height; 
+			var heightChange = this.originalHeight / this.height;
 			if(heightChange < 1) heightChange = 1/heightChange;
-			
+
 			var widthChange = this.originalWidth / this.width;
 			if(widthChange < 1) widthChange = 1/widthChange;
-			
+
 			// Scale by the more constant dimension (so if you edit the height, change width to suit)
 			if(widthChange > heightChange)
 				newHeight = newWidth * this.aspectRatio;
@@ -777,8 +777,8 @@ MCEImageResizer.prototype = {
 		this.style.width = newWidth + 'px';
 		this.style.height = newHeight + 'px';
 		this.width = newWidth;
-		this.height = newHeight;	
-		
+		this.height = newHeight;
+
 		// Auto-size special image holders
 		if(this.parentNode.parentNode.className.match(/(^|\b)specialImage($|\b)/)) {
 			this.parentNode.parentNode.style.width = newWidth + 'px';
@@ -820,22 +820,22 @@ function sapphiremce_cleanup(type, value) {
 	if(type == 'get_from_editor') {
 		// replace indented text with a <blockquote>
 		value = value.replace(/<p [^>]*margin-left[^>]*>([^\n|\n\015|\015\n]*)<\/p>/ig,"<blockquote><p>$1</p></blockquote>");
-	
+
 		// replace VML pixel image references with image tags - experimental
 		value = value.replace(/<[a-z0-9]+:imagedata[^>]+src="?([^> "]+)"?[^>]*>/ig,"<img src=\"$1\">");
-		
+
 		// Word comments
-		value = value.replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), ""); 
-			
-		// kill class=mso??? and on mouse* tags  
-		value = value.replace(/([ \f\r\t\n\'\"])class=mso[a-z0-9]+[^ >]+/ig, "$1"); 
-		value = value.replace(/([ \f\r\t\n\'\"]class=")mso[a-z0-9]+[^ ">]+ /ig, "$1"); 
-		value = value.replace(/([ \f\r\t\n\'\"])class="mso[a-z0-9]+[^">]+"/ig, "$1"); 
+		value = value.replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), "");
+
+		// kill class=mso??? and on mouse* tags
+		value = value.replace(/([ \f\r\t\n\'\"])class=mso[a-z0-9]+[^ >]+/ig, "$1");
+		value = value.replace(/([ \f\r\t\n\'\"]class=")mso[a-z0-9]+[^ ">]+ /ig, "$1");
+		value = value.replace(/([ \f\r\t\n\'\"])class="mso[a-z0-9]+[^">]+"/ig, "$1");
 		value = value.replace(/([ \f\r\t\n\'\"])on[a-z]+=[^ >]+/ig, "$1");
-		value = value.replace(/ >/ig, ">"); 
-	
+		value = value.replace(/ >/ig, ">");
+
 		// remove everything that's in a closing tag
-		value = value.replace(/<(\/[A-Za-z0-9]+)[ \f\r\t\n]+[^>]*>/ig,"<$1>");		
+		value = value.replace(/<(\/[A-Za-z0-9]+)[ \f\r\t\n]+[^>]*>/ig,"<$1>");
 	}
 
 	if(type == 'get_from_editor_dom') {
@@ -858,7 +858,7 @@ function sapphiremce_cleanup(type, value) {
 				img.removeAttribute('onresizeend');
 			}
 		}
-		
+
 	}
 	return value;
 }
