@@ -15,7 +15,7 @@
 
 			/**
 			 * Function: updateTreeLabel
-			 * 
+			 *
 			 * Update the tree
 			 * (String) title
 			 */

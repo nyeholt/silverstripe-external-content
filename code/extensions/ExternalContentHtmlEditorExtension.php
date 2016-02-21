@@ -10,11 +10,11 @@ class ExternalContentHtmlEditorExtension extends Extension {
 
 	public function updateLinkForm(Form $form) {
 		Requirements::javascript(ExternalContentAdmin::$directory . "/javascript/external_tiny_mce_improvements.js");
-		
+
 		$fields = $form->Fields();
 		$fields->replaceField('LinkType', $options = new OptionsetField(
 					'LinkType',
-					_t('HtmlEditorField.LINKTO', 'Link to'), 
+					_t('HtmlEditorField.LINKTO', 'Link to'),
 					array(
 						'internal' => _t('HtmlEditorField.LINKINTERNAL', 'Page on the site'),
 						'external' => _t('HtmlEditorField.LINKEXTERNAL', 'Another website'),
@@ -26,11 +26,11 @@ class ExternalContentHtmlEditorExtension extends Extension {
 				));
 		$fields->insertAfter(
 			$tree = new ExternalTreeDropdownField(
-				'externalcontent', 
+				'externalcontent',
 				_t('ExternalHtmlEditorField.EXTERNAL_CONTENT', 'External Content'),
-				'ExternalContentSource', 
+				'ExternalContentSource',
 				'Link()'
-			), 
+			),
 			'file'
 		);
 

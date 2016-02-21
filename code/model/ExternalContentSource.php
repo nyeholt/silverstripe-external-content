@@ -1,15 +1,15 @@
 <?php
 
 /**
- * A class that represents any kind of an external content source where the 
+ * A class that represents any kind of an external content source where the
  * data can be represented in a tree state
- * 
+ *
  * ExternalContentSources are hierarchical in nature, and are tagged
- * with the 'Hierarchy' extension to enable them to be displayed in 
+ * with the 'Hierarchy' extension to enable them to be displayed in
  * content trees without problem. Due to their nature though, some of the
- * hierarchy functionality is explicitly overridden to prevent DB 
+ * hierarchy functionality is explicitly overridden to prevent DB
  * access
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD License http://silverstripe.org/bsd-license
  *
@@ -21,7 +21,7 @@ class ExternalContentSource extends DataObject {
 		'ShowContentInMenu' => 'Boolean', // should child items of this be seen in menus?,
 		'Sort' => 'Int'
 	);
-	
+
 	private static $defaults = array(
 		'ParentID' => '0'
 	);
@@ -44,12 +44,12 @@ class ExternalContentSource extends DataObject {
 
 	/**
 	 * Get the object represented by an external ID
-	 * 
+	 *
 	 * All external content sources must override this
-	 * method by providing an implementation that looks up the content in 
+	 * method by providing an implementation that looks up the content in
 	 * the remote data source and returns an ExternalContentItem subclass
-	 * that wraps around that external data. 
-	 * 
+	 * that wraps around that external data.
+	 *
 	 * @param String $objectId
 	 * @return DataObject
 	 */
@@ -60,7 +60,7 @@ class ExternalContentSource extends DataObject {
 	/**
 	 * Gets the root item of this content source (used in templates if there's
 	 * not one specified)
-	 *  
+	 *
 	 * @return ExternalContentItem
 	 */
 	public function getRoot() {
@@ -68,8 +68,8 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/*
-	 * The following overrides are mostly placeholders, content 
-	 * sources aren't really referred to by URL directly 
+	 * The following overrides are mostly placeholders, content
+	 * sources aren't really referred to by URL directly
 	 */
 
 	function Link($action = null) {
@@ -85,9 +85,9 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/**
-	 * Child classes should provide connection details to the external 
+	 * Child classes should provide connection details to the external
 	 * content source
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#getCMSFields($params)
 	 * @return FieldSet
 	 */
@@ -104,14 +104,14 @@ class ExternalContentSource extends DataObject {
 
 	/**
 	 * Override to replace Hierarchy::numChildren
-	 * 
-	 * This method should be overridden in child classes to 
+	 *
+	 * This method should be overridden in child classes to
 	 * handle the functionality in a more efficient way. Doing
-	 * things via the method implemented below will work, but 
-	 * could cause several remote calls when it might be 
+	 * things via the method implemented below will work, but
+	 * could cause several remote calls when it might be
 	 * better to just return 1 and let subsequent requests
-	 * get more children. 
-	 * 
+	 * get more children.
+	 *
 	 * @return int
 	 */
 	public function numChildren() {
@@ -119,15 +119,15 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/**
-	 * Get the content importer to use for importing content from 
+	 * Get the content importer to use for importing content from
 	 * this external source
 	 *
 	 * The $target parameter lets the user specify a specific type of import,
-	 * depending on where they've chosen to import to. 
-	 * 
+	 * depending on where they've chosen to import to.
+	 *
 	 * @param String $target
 	 * 			The type of the target we're importing to (SiteTree, File, User etc)
-	 * 
+	 *
 	 * @return ExternalContentImporter
 	 */
 	public function getContentImporter($target=null) {
@@ -138,15 +138,15 @@ class ExternalContentSource extends DataObject {
 	 * Return an array of import locations that the importer for
 	 * this content source supports. For example, an alfresco content
 	 * importer may only support importing to the 'file' tree
-	 * 
-	 * Return an array of the following format ('false' entries can 
+	 *
+	 * Return an array of the following format ('false' entries can
 	 * be safely omitted)
-	 * 
+	 *
 	 * array(
 	 * 		'file' => true,
 	 * 		'sitetree' => false,
 	 * )
-	 * 
+	 *
 	 * @return array
 	 */
 	public function allowedImportTargets() {
@@ -163,12 +163,12 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/**
-	 * We flag external content as being editable so it's 
-	 * accessible in the backend, but the individual 
+	 * We flag external content as being editable so it's
+	 * accessible in the backend, but the individual
 	 * implementations will protect users from editing... for now
-	 * 
+	 *
 	 * TODO: Fix this up to use proper permission checks
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#canEdit($member)
 	 */
 	public function canEdit($member = null) {
@@ -176,11 +176,11 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/**
-	 * Is this item viewable? 
-	 * 
+	 * Is this item viewable?
+	 *
 	 * Just proxy to the content source for now. Child implementations can
 	 * override if needbe
-	 * 
+	 *
 	 * @see sapphire/core/model/DataObject#canView($member)
 	 */
 	public function canView($member = null) {
@@ -199,11 +199,11 @@ class ExternalContentSource extends DataObject {
 
 	/**
 	 * Override to return the top level content items from the remote
-	 * content source. 
-	 * 
+	 * content source.
+	 *
 	 * Specific implementations should effectively query the remote
-	 * source for all items that are children of the 'root' node. 
-	 * 
+	 * source for all items that are children of the 'root' node.
+	 *
 	 * @param boolean $showAll
 	 * @return DataObjectSet
 	 */
@@ -236,9 +236,9 @@ class ExternalContentSource extends DataObject {
 	}
 
 	/**
-	 * Helper function to encode a remote ID that is safe to use within 
+	 * Helper function to encode a remote ID that is safe to use within
 	 * silverstripe
-	 * 
+	 *
 	 * @param $id
 	 * 			The external content ID
 	 * @return string
@@ -253,7 +253,7 @@ class ExternalContentSource extends DataObject {
 
 	/**
 	 * Decode an ID encoded by the above encodeId method
-	 * 
+	 *
 	 * @param String $id
 	 * 			The encoded ID
 	 * @return String

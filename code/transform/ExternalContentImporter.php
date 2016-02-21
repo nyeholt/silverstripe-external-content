@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Implements ExternalContentImporter ? 
+ * Implements ExternalContentImporter ?
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD License http://silverstripe.org/bsd-license
  *
@@ -12,7 +12,7 @@ abstract class ExternalContentImporter extends Object {
 	protected $params = array();
 
 	private static $use_queue = true;
-	
+
 	/**
 	 * @return array
 	 */
@@ -22,13 +22,13 @@ abstract class ExternalContentImporter extends Object {
 
 	/**
 	 * Import from a content source to a particular target
-	 *  
+	 *
 	 * @param ExternalContentItem $contentItem
 	 * @param SiteTree $target
 	 * @param boolean $includeParent
 	 * 			Whether to include the selected item in the import or not
 	 * @param String $duplicateStrategy
-	 * 			How to handle duplication 
+	 * 			How to handle duplication
 	 * @param array $params All parameters passed with the import request.
 	 */
 	public function import($contentItem, $target, $includeParent = false, $includeChildren = true, $duplicateStrategy='Overwrite', $params = array()) {
@@ -65,7 +65,7 @@ abstract class ExternalContentImporter extends Object {
 
 	/**
 	 * Execute the importing of several children
-	 * 
+	 *
 	 * @param DataObjectSet $children
 	 * @param SiteTree $parent
 	 */
@@ -82,7 +82,7 @@ abstract class ExternalContentImporter extends Object {
 				$result = $transformer->transform($child, $parent, $duplicateStrategy);
 
 				$this->extend('onAfterImport', $result);
-				
+
 				// if there's more, then transform them
 				if ($includeChildren && $result && $result->children && count($result->children)) {
 					// import the children
@@ -93,26 +93,26 @@ abstract class ExternalContentImporter extends Object {
 	}
 
 	/**
-	 * Get the type of the item as far as the remote system 
+	 * Get the type of the item as far as the remote system
 	 * is concerned. This should match up with what is defined
 	 * in the contentTransforms array
-	 * 
-	 * @return String 
+	 *
+	 * @return String
 	 * 			The type of the ExternalContentItem
 	 */
 	protected abstract function getExternalType($item);
-	
+
 	/**
 	 * Allow subclasses to run custom logic immediately prior to import start.
 	 * Not declared abstract so method can be optionally defined on subclasses.
 	 */
 	public function runOnImportStart() {
 	}
-	
+
 	/**
 	 * Allow subclasses to run custom logic immediately after to import end.
 	 * Not declared abstract so method can be optionally defined on subclasses.
-	 */	
+	 */
 	public function runOnImportEnd() {
 	}
 }

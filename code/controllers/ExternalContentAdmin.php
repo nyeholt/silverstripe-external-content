@@ -2,7 +2,7 @@
 
 /**
  * Backend administration pages for the external content module
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license BSD License http://silverstripe.org/bsd-license
  */
@@ -19,8 +19,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	static $directory = 'external-content';
 
 	/**
-	 * URL segment used by the backend 
-	 * 
+	 * URL segment used by the backend
+	 *
 	 * @var string
 	 */
 	private static $url_segment = 'external-content';
@@ -70,11 +70,11 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	}
 
 	/**
-	 * 
+	 *
 	 * If there's no ExternalContentSource ID available from Session or Request data then instead of
 	 * LeftAndMain::currentPageID() returning just `null`, "extend" its range to use the first sub-class
 	 * of {@link ExternalContentSource} the system can find, either via config or introspection.
-	 * 
+	 *
 	 * @return number | null
 	 */
 	public function getCurrentPageID() {
@@ -93,19 +93,19 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			else {
 				$class = null;
 			}
-			
+
 			if($class && $source = DataObject::get($class)->first()) {
 				return $source->ID;
 			}
 			return null;
 		}
 		return $id;
-	}	
+	}
 
 	/**
-	 * 
+	 *
 	 * Custom currentPage() method to handle opening the 'root' folder
-	 * 
+	 *
 	 * @return DataObject
 	 */
 	public function currentPage() {
@@ -121,8 +121,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 	/**
 	 * Is the passed in ID a valid
-	 * format? 
-	 * 
+	 * format?
+	 *
 	 * @return boolean
 	 */
 	public static function isValidId($id) {
@@ -132,7 +132,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 	/**
 	 * Action to migrate a selected object through to SS
-	 * 
+	 *
 	 * @param array $request
 	 */
 	public function migrate($request) {
@@ -193,10 +193,10 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 	/**
 	 * Return the record corresponding to the given ID.
-	 * 
+	 *
 	 * Both the numeric IDs of ExternalContentSource records and the composite IDs of ExternalContentItem entries
 	 * are supported.
-	 * 
+	 *
 	 * @param  string $id The ID
 	 * @return Dataobject The relevant object
 	 */
@@ -264,7 +264,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				if (isset($allowedTypes['file'])) {
 					$fields->addFieldToTab('Root.Import', new TreeDropdownField("FileMigrationTarget", _t('ExternalContent.FILE_MIGRATE_TARGET', 'Folder to import into'), 'Folder'));
 				}
-										
+
 				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeSelected", _t('ExternalContent.INCLUDE_SELECTED', 'Include Selected Item in Import')));
 				$fields->addFieldToTab('Root.Import', new CheckboxField("IncludeChildren", _t('ExternalContent.INCLUDE_CHILDREN', 'Include Child Items in Import'), true));
 
@@ -275,13 +275,13 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				);
 
 				$fields->addFieldToTab('Root.Import', new OptionsetField(
-						"DuplicateMethod", 
-						_t('ExternalContent.DUPLICATES', 'Select how duplicate items should be handled'), 
-						$duplicateOptions, 
+						"DuplicateMethod",
+						_t('ExternalContent.DUPLICATES', 'Select how duplicate items should be handled'),
+						$duplicateOptions,
 						$duplicateOptions[ExternalContentTransformer::DS_SKIP]
 					)
 				);
-				
+
 				if (class_exists('QueuedJobDescriptor')) {
 					$repeats = array(
 						0		=> 'None',
@@ -313,7 +313,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 			$actions = CompositeField::create()->setTag('fieldset')->addExtraClass('ss-ui-buttonset');
 			$actions = new FieldList($actions);
-			
+
 			// Only show save button if not 'assets' folder
 			if ($record->canEdit()) {
 				$actions->push(
@@ -333,8 +333,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				);
 			}
 
-			
-			
+
+
 
 			$form = new Form($this, "EditForm", $fields, $actions);
 			if ($record->ID) {
@@ -367,7 +367,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 		/**
 	 * Get the form used to create a new provider
-	 * 
+	 *
 	 * @return Form
 	 */
 	public function AddForm() {
@@ -398,12 +398,12 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$form->addExtraClass('cms-edit-form ' . $this->BaseCSSClasses());
 		$this->extend('updateEditForm', $form);
 
-		return $form; 
+		return $form;
 	}
 
 	/**
 	 * Add a new provider (triggered by the ExternalContentAdmin_left template)
-	 * 
+	 *
 	 * @return unknown_type
 	 */
 	public function addprovider() {
@@ -442,7 +442,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		singleton('CMSPageEditController')->setCurrentPageID($record->ID);
 
 		Session::set(
-			"FormInfo.Form_EditForm.formError.message", 
+			"FormInfo.Form_EditForm.formError.message",
 			sprintf(_t('ExternalContent.SourceAdded', 'Successfully created %s'), $type)
 		);
 		Session::set("FormInfo.Form_EditForm.formError.type", 'good');
@@ -455,8 +455,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 
 
 	/**
-	 * Copied from AssetAdmin... 
-	 * 
+	 * Copied from AssetAdmin...
+	 *
 	 * @return Form
 	 */
 	function DeleteItemsForm() {
@@ -521,7 +521,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		return $this->Link('treeview');
 	}
 
-	
+
 	/**
 	 * @return String HTML
 	 */
@@ -541,18 +541,18 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 	 */
 	public function getsubtree($request) {
 		$html = $this->getSiteTreeFor(
-			'ExternalContentItem', 
-			$request->getVar('ID'), 
+			'ExternalContentItem',
+			$request->getVar('ID'),
 			null,
 			'NumChildren',
-			null, 
+			null,
 			$request->getVar('minNodeCount')
 		);
 
 		// Trim off the outer tag
 		$html = preg_replace('/^[\s\t\r\n]*<ul[^>]*>/','', $html);
 		$html = preg_replace('/<\/ul[^>]*>[\s\t\r\n]*$/','', $html);
-		
+
 		return $html;
 	}
 
@@ -560,19 +560,19 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
  	/**
 	 * Include CSS for page icons. We're not using the JSTree 'types' option
 	 * because it causes too much performance overhead just to add some icons.
-	 * 
-	 * @return String CSS 
+	 *
+	 * @return String CSS
 	 */
 	public function generatePageIconsCss() {
-		$css = ''; 
-		
+		$css = '';
+
 		$sourceClasses 	= ClassInfo::subclassesFor('ExternalContentSource');
 		$itemClasses 	= ClassInfo::subclassesFor('ExternalContentItem');
 		$classes 		= array_merge($sourceClasses, $itemClasses);
-		
+
 		foreach($classes as $class) {
-			$obj = singleton($class); 
-			$iconSpec = $obj->stat('icon'); 
+			$obj = singleton($class);
+			$iconSpec = $obj->stat('icon');
 
 			if(!$iconSpec) continue;
 
@@ -582,9 +582,9 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			// Legacy support: Add file extension if none exists
 			if(!pathinfo($iconFile, PATHINFO_EXTENSION)) $iconFile .= '-file.gif';
 
-			$iconPathInfo = pathinfo($iconFile); 
-			
-			// Base filename 
+			$iconPathInfo = pathinfo($iconFile);
+
+			// Base filename
 			$baseFilename = $iconPathInfo['dirname'] . '/' . $iconPathInfo['filename'];
 			$fileExtension = $iconPathInfo['extension'];
 
@@ -596,7 +596,7 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 				// Support for more sophisticated rules, e.g. sprited icons
 				$css .= "$selector { $iconFile }\n";
 			}
-			
+
 		}
 
 		$css .= "li.type-file > a .jstree-pageicon { background: transparent url('framework/admin/images/sitetree_ss_pageclass_icons_default.png') 0 0 no-repeat; }\n}";
@@ -670,8 +670,8 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		$HTML = $this->treeview($this->request)->value;
 		return preg_replace('/^\s+|\n|\r|\s+$/m', '', $HTML);
 	}
-	
-	
+
+
 	public function updatetreenodes($request) {
 		// noop
 		return parent::updatetreenodes($request);

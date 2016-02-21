@@ -5,19 +5,19 @@
  * @license BSD License http://silverstripe.org/bsd-license/
  */
 class ScheduledExternalImportJob extends AbstractQueuedJob {
-	
+
 	const MIN_REPEAT = 300;
-	
+
 	public function __construct($repeat = null, $contentItem = null, $target = null, $includeParent = false, $includeChildren = true, $targetType = null, $duplicateStrategy='Overwrite', $params = array()) {
 		if ($contentItem) {
 			$this->sourceObjectID = $contentItem->ID;
 			$this->setObject($target);
-			
+
 			$this->includeParent = $includeParent;
 			$this->includeChildren = $includeChildren;
 			$this->duplicateStrategy = $duplicateStrategy;
 			$this->targetType = $targetType;
-			
+
 			$this->params = $params;
 			$repeat = (int) $repeat;
 			if ($repeat > 0) {
@@ -25,36 +25,36 @@ class ScheduledExternalImportJob extends AbstractQueuedJob {
 			} else {
 				$this->repeat = 0;
 			}
-			
+
 			$this->totalSteps = 1;
 		}
 	}
-	
+
 	protected $source;
-	
+
 	public function getSource() {
 		if ($this->sourceObjectID && !$this->source) {
 			$this->source = ExternalContent::getDataObjectFor($this->sourceObjectID);
-			
+
 		}
 		return $this->source;
 	}
-	
+
 	public function getTitle() {
 		return "Scheduled import from " . $this->getSource()->Title;
 	}
-	
+
 	public function getSignature() {
 		return parent::getSignature();
 	}
-	
+
 	public function process() {
 		$source = $this->getSource();
 		$target = $this->getObject();
-		
+
 		if ($source && $target) {
 			$externalSource = $source instanceof ExternalContentItem ? $source->getSource() : $source;
-			
+
 			$importer = null;
 			$importer = $externalSource->getContentImporter($this->targetType);
 
@@ -67,7 +67,7 @@ class ScheduledExternalImportJob extends AbstractQueuedJob {
 				singleton('QueuedJobService')->queueJob($job, date('Y-m-d H:i:s', time() + $this->repeat));
 			}
 		}
-		
+
 		$this->currentStep++;
 		$this->isComplete = true;
 	}

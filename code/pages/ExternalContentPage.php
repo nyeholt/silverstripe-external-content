@@ -4,8 +4,8 @@
  * A Page type that lets you pull content through from any arbitrary
  * external content source. At some point soon, this might change to behave
  * more like a virtual page... Might be necessary in the future
- * 
- * 
+ *
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  * @license http://silverstripe.org/bsd-license/
  */
@@ -29,7 +29,7 @@ class ExternalContentPage extends Page {
 	/**
 	 * When linking to this external content page, return a URL that'll let
 	 * you view the external content item directly
-	 * 
+	 *
 	 * (non-PHPdoc)
 	 * @see sapphire/core/model/SiteTree#Link($action)
 	 */
@@ -43,7 +43,7 @@ class ExternalContentPage extends Page {
 		}
 		return parent::RelativeLink($action);
 	}
-	
+
 	public function LinkFor($remoteObject, $action = null) {
 		$link = parent::RelativeLink();
 		$id = $remoteObject->ID;
@@ -54,18 +54,18 @@ class ExternalContentPage extends Page {
 	/**
 	 * Cache the requested item so that repeated calls
 	 * to this method doesn't make a bunch of extra requests
-	 * 
+	 *
 	 * @var ExternalContentItem
 	 */
 	private $requestedItem;
-	
+
 	public function setRequestedItem($item) {
 		$this->requestedItem = $item;
 	}
 
 	/**
 	 * Get the external content item
-	 * 
+	 *
 	 * @return DataObject
 	 */
 	public function ContentItem($what='k') {
@@ -108,7 +108,7 @@ class ExternalContentPage extends Page {
 
 /**
  * Contains methods for interacting with external content on the frontend
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  *
  */
@@ -125,8 +125,8 @@ class ExternalContentPage_Controller extends Page_Controller {
 	}
 
 	/**
-	 * Display an item. 
-	 * 
+	 * Display an item.
+	 *
 	 * @param HTTP_Request $request
 	 * @return String
 	 */
@@ -142,11 +142,11 @@ class ExternalContentPage_Controller extends Page_Controller {
 				$this->data()->setRequestedItem($object);
 				$type = $object instanceof ExternalContentItem ? $object->getType() : 'source';
 				$template = 'ExternalContent_' . get_class($object) . '_' . $type;
-				
+
 				$viewer = new SSViewer(array($template, 'ExternalContent_' . get_class($object), 'ExternalContent', 'Page'));
 				$action = 'view';
 				$this->extend('updateViewer', $action, $viewer);
-				
+
 				return $this->customise($object)->renderWith($viewer);
 			}
 		}
@@ -156,7 +156,7 @@ class ExternalContentPage_Controller extends Page_Controller {
 
 	/**
 	 * Called to download this content item and stream it directly to the browser
-	 * 
+	 *
 	 * @param HTTP_Request $request
 	 */
 	public function download($request) {

@@ -2,27 +2,27 @@
 
 /**
  * A simple cache service that uses a configurable CacheStore
- * for persisting items for a given length of time. 
- * 
+ * for persisting items for a given length of time.
+ *
  * Usage
- * 
+ *
  * CacheService::inst()->get('mykey');
  * CacheService::inst()->store('mykey', {someobject}, 3600seconds);
- * 
- * 
+ *
+ *
  */
 class CacheService {
 
 	/**
 	 * The cache store to use for actually putting and retrieving items from
-	 * 
+	 *
 	 * @var CacheStore
 	 */
 	protected $store = null;
 
 	/**
 	 * The type of store we're using for the cache
-	 * 
+	 *
 	 * @var string
 	 */
 	public static $store_type = 'FileBasedCacheStore';
@@ -114,7 +114,7 @@ class CacheService {
 
 	/**
 	 * Explicitly expire the given key
-	 * 
+	 *
 	 * @param $key
 	 */
 	public function expire($key) {
@@ -126,7 +126,7 @@ class CacheService {
 
 /**
  * A cache store definition
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  *
  */
@@ -134,7 +134,7 @@ interface CacheStore {
 
 	/**
 	 * Saves data with the given key at the particular value
-	 * 
+	 *
 	 * @param String $key
 	 * 			The key for the data to be stored
 	 * @param String $value
@@ -143,20 +143,20 @@ interface CacheStore {
 	public function store($key, $value);
 
 	/**
-	 * Retrieve content from the cache. 
-	 * 
+	 * Retrieve content from the cache.
+	 *
 	 * Returns null in case of missing data
-	 * 
+	 *
 	 * @param String $key
 	 * 			The key for the data
-	 * 
+	 *
 	 * @return CacheItem
 	 */
 	public function get($key);
 
 	/**
 	 * Delete a given key from the cache
-	 * 
+	 *
 	 * @param String $key
 	 */
 	public function delete($key);
@@ -164,7 +164,7 @@ interface CacheStore {
 
 /**
  * A cache store that uses the filesystem for storing cached content
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  *
  */
@@ -214,7 +214,7 @@ class FileBasedCacheStore implements CacheStore {
 
 /**
  * Basic wrapper around items that need to be stored in the cache
- * 
+ *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  *
  */
