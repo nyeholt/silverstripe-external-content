@@ -101,6 +101,18 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 		}
 		return $id;
 	}
+    
+    public function currentPageID() {
+		if($this->getRequest()->requestVar('ID') && preg_match(ExternalContent::ID_FORMAT, $this->getRequest()->requestVar('ID')))	{
+			return $this->getRequest()->requestVar('ID');
+		} elseif (isset($this->urlParams['ID']) && preg_match(ExternalContent::ID_FORMAT, $this->urlParams['ID'])) {
+			return $this->urlParams['ID'];
+		} elseif(Session::get($this->sessionNamespace() . ".currentPage")) {
+			return Session::get($this->sessionNamespace() . ".currentPage");
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 *
