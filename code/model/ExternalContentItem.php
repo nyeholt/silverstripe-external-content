@@ -276,11 +276,11 @@ class ExternalContentItem extends DataObject {
 						$field = new $field($name, $this->fieldLabel($name), $value);
 						$fields->addFieldToTab('Root.Main', $field);
 					}
-				} else if(!is_object($value)){
+				} else if(!is_object($value) && !is_array($value)){
 					$value = (string) $value;
 					$field = new ReadonlyField($name, _t('ExternalContentItem.' . $name, $name), $value);
 					$fields->addFieldToTab('Root.Main', $field);
-				} else if(is_object($value)){
+				} else if(is_object($value) || is_array($value)){
 					foreach($value as $childName => $childValue) {
 						if(is_object($childValue)) {
 							foreach($childValue as $childChildName => $childChildValue) {
@@ -291,7 +291,7 @@ class ExternalContentItem extends DataObject {
 						}
 						else {
 							$childValue = (string) $childValue;
-							$field = new ReadonlyField($childName, $childName, $childValue);
+							$field = new ReadonlyField("{$childName}{$childValue}", $name . ':' . $childName, $childValue);
 							$fields->addFieldToTab('Root.Main', $field);
 						}
 					}
