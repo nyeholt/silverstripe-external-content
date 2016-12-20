@@ -184,17 +184,22 @@ class ExternalContentAdmin extends LeftAndMain implements CurrentPageIdentifier,
 			if (isset($request['Repeat']) && $request['Repeat'] > 0) {
 				$job = new ScheduledExternalImportJob($request['Repeat'], $from, $target, $includeSelected, $includeChildren, $targetType, $duplicates, $request);
 				singleton('QueuedJobService')->queueJob($job);
-			} else {
-				$importer = null;
-				$importer = $from->getContentImporter($targetType);
 
+				$messageType = 'good';
+				$message = _t('ExternalContent.CONTENTMIGRATEQUEUED', 'Import job queued.');
+			} else {
+				$importer = $from->getContentImporter($targetType);
 				if ($importer) {
-					$importer->import($from, $target, $includeSelected, $includeChildren, $duplicates, $request);
+					$result = $importer->import($from, $target, $includeSelected, $includeChildren, $duplicates, $request);
+
+					$messageType = 'good';
+					if ($result instanceof QueuedExternalContentImporter) {
+						$message = _t('ExternalContent.CONTENTMIGRATEQUEUED', 'Import job queued.');
+					} else {
+						$message = _t('ExternalContent.CONTENTMIGRATED', 'Import Successful.');
+					}
 				}
 			}
-
-			$messageType = 'good';
-			$message = _t('ExternalContent.CONTENTMIGRATED', 'Import Successful.');
 		}
 
 		Session::set("FormInfo.Form_EditForm.formError.message",$message);

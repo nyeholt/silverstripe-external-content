@@ -46,8 +46,9 @@ abstract class ExternalContentImporter extends Object {
 							$duplicateStrategy,
 							$params);
 
-			singleton('QueuedJobService')->queueJob($importer);
-			return;
+			$service = singleton('QueuedJobService');
+			$service->queueJob($importer);
+			return $importer;
 		}
 
 		$children = null;
@@ -61,6 +62,7 @@ abstract class ExternalContentImporter extends Object {
 
 		$this->importChildren($children, $target, $includeChildren, $duplicateStrategy);
 		$this->runOnImportEnd();
+		return true;
 	}
 
 	/**
