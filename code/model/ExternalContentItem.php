@@ -284,13 +284,13 @@ class ExternalContentItem extends DataObject {
 					foreach($value as $childName => $childValue) {
 						if(is_object($childValue)) {
 							foreach($childValue as $childChildName => $childChildValue) {
-								$childChildValue = (string) $childChildValue;
+								$childChildValue = is_object($childChildValue) || is_array($childChildValue) ? json_encode($childChildValue) : (string) $childChildValue;
 								$field = new ReadonlyField("{$childName}{$childChildName}", "{$childName}: {$childChildName}", $childChildValue);
 								$fields->addFieldToTab('Root.Main', $field);
 							}
 						}
 						else {
-							$childValue = (string) $childValue;
+							$childValue =  is_object($childValue) || is_array($childValue) ? json_encode($childValue) : (string) $childValue;
 							$field = new ReadonlyField("{$childName}{$childValue}", $name . ':' . $childName, $childValue);
 							$fields->addFieldToTab('Root.Main', $field);
 						}
