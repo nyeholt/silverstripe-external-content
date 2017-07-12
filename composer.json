@@ -8,7 +8,7 @@
 		"email": "marcus@silverstripe.com.au"
 	}],
 	"require": {
-		"silverstripe/framework": ">=3.0.0"
+		"silverstripe/framework": "^3.0.0"
 	},
 
 	"extra": {
